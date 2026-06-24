@@ -1,0 +1,452 @@
+﻿  PluginProcessor.cpp
+  PluginEditor.cpp
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(16,42): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(16,48): error C2504: 'AudioProcessor': base class undefined
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(28,34): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(28,51): error C2143: syntax error: missing ',' before '&'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(31,24): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(31,30): error C2061: syntax error: identifier 'AudioBuffer'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,5): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,31): error C2143: syntax error: missing ';' before '*'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,56): error C2238: unexpected token(s) preceding ';'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(16,42): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,11): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(16,48): error C2504: 'AudioProcessor': base class undefined
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,24): error C3646: 'getName': unknown override specifier
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,32): error C2059: syntax error: ')'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,48): error C2238: unexpected token(s) preceding ';'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,11): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(28,34): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(28,51): error C2143: syntax error: missing ',' before '&'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,24): error C3646: 'getProgramName': unknown override specifier
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(31,24): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(31,30): error C2061: syntax error: identifier 'AudioBuffer'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,40): error C2062: type 'int' unexpected
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,5): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,59): error C2238: unexpected token(s) preceding ';'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,31): error C2143: syntax error: missing ';' before '*'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(34,56): error C2238: unexpected token(s) preceding ';'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,46): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,11): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,40): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,58): error C2143: syntax error: missing ',' before '&'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,24): error C3646: 'getName': unknown override specifier
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,32): error C2059: syntax error: ')'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(38,48): error C2238: unexpected token(s) preceding ';'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(53,31): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(53,37): error C2061: syntax error: identifier 'MemoryBlock'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,11): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,24): error C3646: 'getProgramName': unknown override specifier
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,40): error C2062: type 'int' unexpected
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(49,59): error C2238: unexpected token(s) preceding ';'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(59,1): error C2143: syntax error: missing ';' before '}'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,46): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,40): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(58,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,58): error C2143: syntax error: missing ',' before '&'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(53,31): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(58,5): warning C4183: 'JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR': missing return type; assumed to be a member function returning 'int'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(53,37): error C2061: syntax error: identifier 'MemoryBlock'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(59,1): error C2143: syntax error: missing ';' before '}'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(58,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(21,6): error C3668: 'NewProjectAudioProcessor::~NewProjectAudioProcessor': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(58,5): warning C4183: 'JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR': missing return type; assumed to be a member function returning 'int'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(24,10): error C3668: 'NewProjectAudioProcessor::prepareToPlay': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(25,10): error C3668: 'NewProjectAudioProcessor::releaseResources': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(28,10): error C3668: 'NewProjectAudioProcessor::isBusesLayoutSupported': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(31,10): error C3668: 'NewProjectAudioProcessor::processBlock': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(21,6): error C3668: 'NewProjectAudioProcessor::~NewProjectAudioProcessor': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(35,10): error C3668: 'NewProjectAudioProcessor::hasEditor': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(24,10): error C3668: 'NewProjectAudioProcessor::prepareToPlay': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(40,10): error C3668: 'NewProjectAudioProcessor::acceptsMidi': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(25,10): error C3668: 'NewProjectAudioProcessor::releaseResources': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(41,10): error C3668: 'NewProjectAudioProcessor::producesMidi': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(28,10): error C3668: 'NewProjectAudioProcessor::isBusesLayoutSupported': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(31,10): error C3668: 'NewProjectAudioProcessor::processBlock': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(42,10): error C3668: 'NewProjectAudioProcessor::isMidiEffect': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(35,10): error C3668: 'NewProjectAudioProcessor::hasEditor': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(43,12): error C3668: 'NewProjectAudioProcessor::getTailLengthSeconds': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(40,10): error C3668: 'NewProjectAudioProcessor::acceptsMidi': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(46,9): error C3668: 'NewProjectAudioProcessor::getNumPrograms': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(41,10): error C3668: 'NewProjectAudioProcessor::producesMidi': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(42,10): error C3668: 'NewProjectAudioProcessor::isMidiEffect': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(47,9): error C3668: 'NewProjectAudioProcessor::getCurrentProgram': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(43,12): error C3668: 'NewProjectAudioProcessor::getTailLengthSeconds': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(48,10): error C3668: 'NewProjectAudioProcessor::setCurrentProgram': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(46,9): error C3668: 'NewProjectAudioProcessor::getNumPrograms': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,10): error C3668: 'NewProjectAudioProcessor::changeProgramName': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(47,9): error C3668: 'NewProjectAudioProcessor::getCurrentProgram': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(53,10): error C3668: 'NewProjectAudioProcessor::getStateInformation': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(48,10): error C3668: 'NewProjectAudioProcessor::setCurrentProgram': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(54,10): error C3668: 'NewProjectAudioProcessor::setStateInformation': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(50,10): error C3668: 'NewProjectAudioProcessor::changeProgramName': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(53,10): error C3668: 'NewProjectAudioProcessor::getStateInformation': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(54,10): error C3668: 'NewProjectAudioProcessor::setStateInformation': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(17,48): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(17,48): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(17,54): error C2504: 'AudioProcessorEditor': base class undefined
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(17,54): error C2504: 'AudioProcessorEditor': base class undefined
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(24,17): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(24,17): error C2653: 'juce': is not a class or namespace name
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(24,23): error C2061: syntax error: identifier 'Graphics'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(24,23): error C2061: syntax error: identifier 'Graphics'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(33,1): error C2143: syntax error: missing ';' before '}'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(33,1): error C2143: syntax error: missing ';' before '}'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(32,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(32,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(32,5): warning C4183: 'JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR': missing return type; assumed to be a member function returning 'int'
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(32,5): warning C4183: 'JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR': missing return type; assumed to be a member function returning 'int'
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(21,6): error C3668: 'NewProjectAudioProcessorEditor::~NewProjectAudioProcessorEditor': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(24,10): error C3668: 'NewProjectAudioProcessorEditor::paint': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(25,10): error C3668: 'NewProjectAudioProcessorEditor::resized': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginEditor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(21,6): error C3668: 'NewProjectAudioProcessorEditor::~NewProjectAudioProcessorEditor': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(24,10): error C3668: 'NewProjectAudioProcessorEditor::paint': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.h(25,10): error C3668: 'NewProjectAudioProcessorEditor::resized': method with override specifier 'override' did not override any base class methods
+  (compiling source file '../../Source/PluginProcessor.cpp')
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(14,7): error C2614: 'NewProjectAudioProcessorEditor': illegal member initialization: 'AudioProcessorEditor' is not a base or member
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(18,5): error C3861: 'setSize': identifier not found
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(15,24): error C3861: 'BusesProperties': identifier not found
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(18,47): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(26,45): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(18,70): error C3861: 'stereo': identifier not found
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(26,51): error C2065: 'Graphics': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(26,61): error C2065: 'g': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(20,47): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(26,38): error C2761: 'void NewProjectAudioProcessorEditor::paint(void)': redeclaration of member is not allowed
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(20,70): error C3861: 'stereo': identifier not found
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(27,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,5): error C3927: '->': trailing return type is not allowed after a non-function declarator
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(15,8): error C2614: 'NewProjectAudioProcessor': illegal member initialization: 'AudioProcessor' is not a base or member
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,6): error C3484: syntax error: expected '->' before the return type
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,7): error C3613: missing return type after '->' ('int' assumed)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,7): error C2146: syntax error: missing ';' before identifier 'fillAll'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,45): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(31,5): error C3927: '->': trailing return type is not allowed after a non-function declarator
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(31,6): error C3484: syntax error: expected '->' before the return type
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(31,7): error C3613: missing return type after '->' ('int' assumed)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(31,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(31,5): error C2086: 'int g': redefinition
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,5):
+      see declaration of 'g'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(31,7): error C2146: syntax error: missing ';' before identifier 'setColour'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(32,7): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(31,18): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(32,1): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(32,5): error C3927: '->': trailing return type is not allowed after a non-function declarator
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(32,6): error C3484: syntax error: expected '->' before the return type
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(32,46): error C2039: 'getName': is not a member of 'NewProjectAudioProcessor'
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(16,7):
+      see declaration of 'NewProjectAudioProcessor'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(32,7): error C3613: missing return type after '->' ('int' assumed)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(32,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(32,46): error C2146: syntax error: missing ';' before identifier 'getName'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(32,5): error C2086: 'int g': redefinition
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,5):
+      see declaration of 'g'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(32,54): error C2059: syntax error: ')'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(32,7): error C2146: syntax error: missing ';' before identifier 'setFont'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(33,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(32,16): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(33,5): error C3927: '->': trailing return type is not allowed after a non-function declarator
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(33,6): error C3484: syntax error: expected '->' before the return type
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(33,1): error C2447: '{': missing function header (old-style formal list?)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(33,7): error C3613: missing return type after '->' ('int' assumed)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(33,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(33,5): error C2086: 'int g': redefinition
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(29,5):
+      see declaration of 'g'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(33,7): error C2146: syntax error: missing ';' before identifier 'drawFittedText'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(33,57): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(34,1): error C2059: syntax error: '}'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(34,1): error C2143: syntax error: missing ';' before '}'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(37,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginEditor.cpp(37,1): error C2447: '{': missing function header (old-style formal list?)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(84,7): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(84,1): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(84,46): error C2039: 'getProgramName': is not a member of 'NewProjectAudioProcessor'
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(16,7):
+      see declaration of 'NewProjectAudioProcessor'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(84,13): error C2086: 'const int String': redefinition
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(32,13):
+      see declaration of 'String'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(84,46): error C2146: syntax error: missing ';' before identifier 'getProgramName'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(84,62): error C2062: type 'int' unexpected
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(85,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(85,1): error C2447: '{': missing function header (old-style formal list?)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(89,68): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(89,62): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(89,80): error C2143: syntax error: missing ',' before '&'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(89,74): warning C4459: declaration of 'String' hides global declaration
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(32,13):
+      see declaration of 'String'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(107,56): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(107,73): error C2143: syntax error: missing ',' before '&'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(117,9): error C2065: 'layouts': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(117,46): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(117,69): error C3861: 'mono': identifier not found
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(118,9): error C2065: 'layouts': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(118,46): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(118,69): error C3861: 'stereo': identifier not found
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(123,9): error C2065: 'layouts': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(123,46): error C2065: 'layouts': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(132,46): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(132,52): error C2065: 'AudioBuffer': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(132,64): error C2062: type 'float' unexpected
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(132,80): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(133,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(133,1): error C2447: '{': missing function header (old-style formal list?)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(167,1): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(167,27): error C2143: syntax error: missing ';' before '*'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(167,7): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(167,55): error C2039: 'createEditor': is not a member of 'NewProjectAudioProcessor'
+      C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.h(16,7):
+      see declaration of 'NewProjectAudioProcessor'
+  
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(167,55): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(168,1): error C2059: syntax error: '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(168,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(168,1): error C2447: '{': missing function header (old-style formal list?)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(173,53): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(173,59): error C2065: 'MemoryBlock': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(173,72): error C2065: 'destData': undeclared identifier
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(173,32): error C2761: 'void NewProjectAudioProcessor::getStateInformation(void)': redeclaration of member is not allowed
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(174,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(178,1): error C2059: syntax error: '}'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(178,1): error C2143: syntax error: missing ';' before '}'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(181,1): error C2143: syntax error: missing ';' before '{'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(181,1): error C2447: '{': missing function header (old-style formal list?)
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(188,1): error C2653: 'juce': is not a class or namespace name
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(188,21): error C2143: syntax error: missing ';' before '*'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(188,7): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(188,23): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(188,37): error C2146: syntax error: missing ';' before identifier 'createPluginFilter'
+C:\Users\fenrikos\Documents\JUCE\projects\NewProject\Source\PluginProcessor.cpp(188,37): error C1003: error count exceeds 100; stopping compilation
