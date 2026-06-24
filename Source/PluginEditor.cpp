@@ -213,11 +213,6 @@ void OmniQAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::FontOptions(22.0f).withStyle("Bold"));
     g.drawText("Omni-Q", 16, 0, 120, 48, juce::Justification::centredLeft, false);
 
-    // Logo sub-caption
-    g.setColour(TEXT_LO);
-    g.setFont(juce::FontOptions(10.0f));
-    g.drawText("24-Band Parametric", 16, 27, 140, 14, juce::Justification::centredLeft, false);
-
     // Accent dot between logo sections
     g.setColour(ACCENT_1);
     g.fillEllipse(juce::Rectangle<float>(3.0f, 3.0f, 5.0f, 5.0f).withY(21.5f).withX(8.0f));
