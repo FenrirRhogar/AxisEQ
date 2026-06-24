@@ -3,8 +3,18 @@ name: Build AxisEQ
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - '**.png'
+      - '**.jpg'
+      - '.gitignore'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - '**.png'
+      - '**.jpg'
+      - '.gitignore'
   workflow_dispatch:
 
 jobs:
