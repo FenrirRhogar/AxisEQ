@@ -19,7 +19,7 @@ CustomLookAndFeel::CustomLookAndFeel()
 juce::Typeface::Ptr CustomLookAndFeel::getTypefaceForFont(const juce::Font& f)
 {
     // Use system modern font (Segoe UI on Windows, San Francisco on Mac)
-    static auto typeface = juce::Typeface::createSystemTypefaceFor(juce::Font("Segoe UI", f.getHeight(), f.getStyleFlags()));
+    static auto typeface = juce::Typeface::createSystemTypefaceFor(juce::FontOptions("Segoe UI", f.getHeight(), f.getStyleFlags()));
     return typeface;
 }
 
@@ -29,9 +29,6 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 {
     auto bounds = juce::Rectangle<int>(x, y, width, height).toFloat().reduced(4.0f);
     auto radius = juce::jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f;
-    auto topx = bounds.getCentreX() - radius;
-    auto topy = bounds.getCentreY() - radius;
-    auto rw = radius * 2.0f;
     
     auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
     
@@ -64,7 +61,7 @@ juce::Label* CustomLookAndFeel::createSliderTextBox(juce::Slider& slider)
 {
     auto* l = juce::LookAndFeel_V4::createSliderTextBox(slider);
     l->setJustificationType(juce::Justification::centred);
-    l->setFont(10.0f);
+    l->setFont(juce::FontOptions(10.0f));
     return l;
 }
 
@@ -80,9 +77,9 @@ void CustomLookAndFeel::drawPopupMenuBackground(juce::Graphics& g, int width, in
 void CustomLookAndFeel::drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area,
                                           const bool isSeparator, const bool isActive,
                                           const bool isHighlighted, const bool isTicked,
-                                          const bool hasSubMenu, const juce::String& text,
-                                          const juce::String& shortcutKeyText,
-                                          const juce::Drawable* icon, const juce::Colour* const textColourToUse)
+                                          const bool /*hasSubMenu*/, const juce::String& text,
+                                          const juce::String& /*shortcutKeyText*/,
+                                          const juce::Drawable* /*icon*/, const juce::Colour* const /*textColourToUse*/)
 {
     if (isSeparator)
     {
