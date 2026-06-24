@@ -35,6 +35,8 @@ juce_add_plugin(AxisEQ
     FORMATS                  VST3 AU Standalone
     PRODUCT_NAME             "AxisEQ"
     COPY_PLUGIN_AFTER_BUILD  FALSE
+    ICON_BIG                 AxisEQ_logo.png
+    ICON_SMALL               AxisEQ_logo.png
 )
 
 juce_generate_juce_header(AxisEQ)
