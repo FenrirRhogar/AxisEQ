@@ -6,8 +6,18 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# JUCE framework root is two directories above this project
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../.. ${CMAKE_CURRENT_BINARY_DIR}/JUCE EXCLUDE_FROM_ALL)
+# JUCE framework path
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeLists.txt")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../.. ${CMAKE_CURRENT_BINARY_DIR}/JUCE EXCLUDE_FROM_ALL)
+else()
+    include(FetchContent)
+    FetchContent_Declare(
+        JUCE
+        GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+        GIT_TAG 8.0.0
+    )
+    FetchContent_MakeAvailable(JUCE)
+endif()
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Plugin target
@@ -22,7 +32,7 @@ juce_add_plugin(OmniQ
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     PLUGIN_MANUFACTURER_CODE Omni
     PLUGIN_CODE              Omnq
-    FORMATS                  VST3 Standalone
+    FORMATS                  VST3 AU Standalone
     PRODUCT_NAME             "Omni-Q"
     COPY_PLUGIN_AFTER_BUILD  FALSE
 )
