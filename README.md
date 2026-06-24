@@ -1,9 +1,14 @@
 <div align="center">
+  <img src="AxisEQ_logo.png" alt="AxisEQ Logo" width="200"/>
   <h1>AxisEQ</h1>
   <p><b>A Premium 24-Band Dynamic Equalizer Plugin</b></p>
 </div>
 
 ---
+
+<div align="center">
+  <img src="AxisEQ_screenshot.png" alt="AxisEQ Screenshot" width="800"/>
+</div>
 
 ## 🎛️ Overview
 
@@ -11,16 +16,18 @@
 
 ## ✨ Key Features
 
-- **24-Band Parametric EQ**: Create up to 24 independent EQ bands by simply double-clicking the canvas.
+- **24-Band Parametric EQ**: Create up to 24 independent EQ bands by simply clicking the canvas.
 - **Dynamic EQ & External Sidechain**: Every single band can act as a dynamic EQ. Duck specific frequencies using the internal signal, or route an external sidechain to trigger the dynamic gain reduction (e.g., ducking the bass guitar's 60Hz only when the kick drum hits).
 - **Advanced Mid/Side Processing**: Route any EQ band to operate on the Stereo, Left, Right, Mid, or Side channels for advanced stereo imaging and mastering control.
-- **Smart Filter Creation**: Double-clicking on the far-left of the spectrum automatically creates a Low Cut filter, while double-clicking on the far-right creates a High Cut filter.
+- **Real-time Spectrum Analyzer**: Gorgeous, smooth visual feedback of your audio before and after processing.
 - **Premium User Interface**: Features a custom-built, modern LookAndFeel with vector arcs, floating text, and dynamic gain reduction visualizations.
 - **Zero Latency DSP**: Cascaded biquad filters utilizing RBJ Audio EQ Cookbook formulas guarantee analog-matched curves and lightning-fast processing with zero allocations on the audio thread.
 
-## 🛠️ Installation (Windows)
+## 🛠️ Installation
 
-For an automatic installation into REAPER or your VST3 host of choice:
+You can download the pre-compiled VST3 and AU plugins directly from the [Releases](https://github.com/FenrirRhogar/AxisEQ/releases) tab.
+
+Alternatively, for an automatic installation on Windows into REAPER or your VST3 host of choice:
 1. Clone the repository.
 2. Run the `install.bat` script located in the project root.
 3. The script will automatically compile the plugin using CMake and copy the VST3 file directly into your `C:\Program Files\Common Files\VST3` folder.

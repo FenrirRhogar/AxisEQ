@@ -1,5 +1,5 @@
 # CMake builds
-build/
+build*/
 out/
 .cmake/
 CMakeCache.txt
