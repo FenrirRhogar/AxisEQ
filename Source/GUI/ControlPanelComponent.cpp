@@ -54,6 +54,7 @@ ControlPanelComponent::ControlPanelComponent(OmniQAudioProcessor& p) : processor
     };
 
     dynToggle.onClick = [this] { updateVisibility(); };
+    typeCombo.onChange = [this] { updateVisibility(); };
 
     updateVisibility();
 }
@@ -190,6 +191,14 @@ void ControlPanelComponent::updateVisibility()
         dynRangeSlider.setEnabled(dynOn);
         dynAttackSlider.setEnabled(dynOn);
         dynReleaseSlider.setEnabled(dynOn);
+        
+        bool oldSlopeVis = slopeCombo.isVisible();
+        const bool usesSlope = processor.bandParams[static_cast<size_t>(currentBandIndex)].filterUsesSlope();
+        slopeCombo.setVisible(usesSlope);
+        slopeLabel.setVisible(usesSlope);
+        
+        if (oldSlopeVis != usesSlope)
+            resized();
     }
 }
 
@@ -262,8 +271,13 @@ void ControlPanelComponent::resized()
 
         typeLabel.setBounds   (cx, y,       cw, lh);         y += lh;
         typeCombo.setBounds   (cx, y,       cw, combH);       y += combH + 3;
-        slopeLabel.setBounds  (cx, y,       cw, lh);         y += lh;
-        slopeCombo.setBounds  (cx, y,       cw, combH);       y += combH + 3;
+
+        if (slopeCombo.isVisible())
+        {
+            slopeLabel.setBounds  (cx, y,       cw, lh);         y += lh;
+            slopeCombo.setBounds  (cx, y,       cw, combH);       y += combH + 3;
+        }
+
         routingLabel.setBounds(cx, y,       cw, lh);         y += lh;
         routingCombo.setBounds(cx, y,       cw, combH);       y += combH + 4;
 
