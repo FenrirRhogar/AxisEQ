@@ -36,8 +36,8 @@ private:
     juce::Label    typeLabel, slopeLabel, routingLabel;
 
     // ── Dynamic EQ controls ───────────────────────────────────────────────
-    juce::ToggleButton dynToggle { "Dynamic" };
-    juce::ToggleButton dynScToggle { "EXT SC" };
+    juce::TextButton dynToggle { "DYNAMIC" };
+    juce::TextButton dynScToggle { "EXT SC" };
     juce::Slider dynThreshSlider, dynRangeSlider, dynAttackSlider, dynReleaseSlider;
     juce::Label  dynThreshLabel,  dynRangeLabel,  dynAttackLabel,  dynReleaseLabel;
 

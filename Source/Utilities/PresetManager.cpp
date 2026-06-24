@@ -68,6 +68,7 @@ void PresetManager::saveCurrentAsUserPreset(const juce::String& name,
         b.slope        = static_cast<int>(get("slope"));
         b.route        = static_cast<int>(get("route"));
         b.dynEnabled   = get("dyn_enabled")  >= 0.5f;
+        b.dynExtSc     = get("dyn_ext_sc")   >= 0.5f;
         b.dynThreshold = get("dyn_threshold");
         b.dynRange     = get("dyn_range");
         b.dynAttack    = get("dyn_attack");
@@ -144,6 +145,7 @@ void PresetManager::applyPreset(const Preset& p)
         setChoice("slope",       b.slope);
         setChoice("route",       b.route);
         setBool("dyn_enabled",   b.dynEnabled);
+        setBool("dyn_ext_sc",    b.dynExtSc);
         set    ("dyn_threshold", b.dynThreshold);
         set    ("dyn_range",     b.dynRange);
         set    ("dyn_attack",    b.dynAttack);
@@ -183,6 +185,7 @@ juce::XmlElement* PresetManager::presetToXml(const Preset& p)
         bandEl->setAttribute("slope",        b.slope);
         bandEl->setAttribute("route",        b.route);
         bandEl->setAttribute("dynEnabled",   b.dynEnabled   ? 1 : 0);
+        bandEl->setAttribute("dynExtSc",     b.dynExtSc     ? 1 : 0);
         bandEl->setAttribute("dynThreshold", b.dynThreshold);
         bandEl->setAttribute("dynRange",     b.dynRange);
         bandEl->setAttribute("dynAttack",    b.dynAttack);
@@ -215,6 +218,7 @@ bool PresetManager::xmlToPreset(const juce::XmlElement& xml, Preset& out)
         b.slope        = bandEl->getIntAttribute("slope",        1);
         b.route        = bandEl->getIntAttribute("route",        0);
         b.dynEnabled   = bandEl->getIntAttribute("dynEnabled",   0) != 0;
+        b.dynExtSc     = bandEl->getIntAttribute("dynExtSc",     0) != 0;
         b.dynThreshold = static_cast<float>(bandEl->getDoubleAttribute("dynThreshold", -20.0));
         b.dynRange     = static_cast<float>(bandEl->getDoubleAttribute("dynRange",     0.0));
         b.dynAttack    = static_cast<float>(bandEl->getDoubleAttribute("dynAttack",    10.0));
@@ -435,6 +439,34 @@ void PresetManager::buildFactoryPresets()
         {2, band(3000.0f,-1.5f, 0.8f)},
         {3, band(12000.0f,0.0f, 0.707f, 2)},
     }));
+
+    // ── External Sidechain: Kick Ducking ─────────────────────────────────
+    {
+        Preset p = makePreset("Kick Ducking (Sidechain)", "Dynamics", {
+            { 0, band(60.f, 0.f, 0.707f, 0, 1) }
+        });
+        p.bands[0].dynEnabled = true;
+        p.bands[0].dynExtSc   = true;
+        p.bands[0].dynThreshold = -30.0f;
+        p.bands[0].dynRange   = -12.0f;
+        p.bands[0].dynAttack  = 5.0f;
+        p.bands[0].dynRelease = 60.0f;
+        allPresets.push_back(p);
+    }
+
+    // ── External Sidechain: Vocal Rider ──────────────────────────────────
+    {
+        Preset p = makePreset("Vocal Rider (Sidechain)", "Dynamics", {
+            { 0, band(2000.f, 0.f, 0.3f, 0, 1) }
+        });
+        p.bands[0].dynEnabled = true;
+        p.bands[0].dynExtSc   = true;
+        p.bands[0].dynThreshold = -40.0f;
+        p.bands[0].dynRange   = -6.0f;
+        p.bands[0].dynAttack  = 2.0f;
+        p.bands[0].dynRelease = 150.0f;
+        allPresets.push_back(p);
+    }
 }
 
 } // namespace OmniQ

@@ -18,15 +18,7 @@ ControlPanelComponent::ControlPanelComponent(OmniQAudioProcessor& p) : processor
     setupCombo(slopeCombo,   slopeLabel,   FilterSlopeNames, "Slope");
     setupCombo(routingCombo, routingLabel, RoutingModeNames, "Route");
 
-    dynToggle.setColour(juce::ToggleButton::textColourId,          textHi());
-    dynToggle.setColour(juce::ToggleButton::tickColourId,          dynAccent());
-    dynToggle.setColour(juce::ToggleButton::tickDisabledColourId,  textLo());
-    addAndMakeVisible(dynToggle);
-
-    dynScToggle.setColour(juce::ToggleButton::textColourId,          textHi());
-    dynScToggle.setColour(juce::ToggleButton::tickColourId,          dynAccent());
-    dynScToggle.setColour(juce::ToggleButton::tickDisabledColourId,  textLo());
-    addAndMakeVisible(dynScToggle);
+    // We will style dynToggle and dynScToggle below along with other TextButtons
 
     setupDynKnob(dynThreshSlider,  dynThreshLabel,  "Thresh");
     setupDynKnob(dynRangeSlider,   dynRangeLabel,   "Range");
@@ -45,6 +37,8 @@ ControlPanelComponent::ControlPanelComponent(OmniQAudioProcessor& p) : processor
     };
     styleBtn(activeBtn, accent());
     styleBtn(bypassBtn, juce::Colour(0xFFE8B44A));
+    styleBtn(dynToggle, dynAccent());
+    styleBtn(dynScToggle, dynAccent().withAlpha(0.6f));
 
     activeBtn.onClick = [this]
     {

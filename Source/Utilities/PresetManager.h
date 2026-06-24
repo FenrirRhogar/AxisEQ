@@ -18,6 +18,7 @@ struct PresetBand
     int   slope        = 1;   // FilterSlope int (12 dB/oct)
     int   route        = 0;   // RoutingMode int (Stereo)
     bool  dynEnabled   = false;
+    bool  dynExtSc     = false;
     float dynThreshold = -20.0f;
     float dynRange     = 0.0f;
     float dynAttack    = 10.0f;
