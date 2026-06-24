@@ -42,6 +42,7 @@ target_sources(OmniQ PRIVATE
     Source/GUI/SpectrumAnalyzer.cpp
     Source/GUI/EQCurveComponent.cpp
     Source/GUI/ControlPanelComponent.cpp
+    Source/GUI/CustomLookAndFeel.cpp
 )
 
 target_include_directories(OmniQ

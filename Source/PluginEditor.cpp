@@ -27,6 +27,8 @@ OmniQAudioProcessorEditor::OmniQAudioProcessorEditor(OmniQAudioProcessor& p)
     setResizeLimits(800, 440, 2560, 1440);
 
     // ── Preset system ────────────────────────────────────────────────────
+    setLookAndFeel(&customLookAndFeel);
+    
     presetManager = std::make_unique<OmniQ::PresetManager>(processorRef.apvts);
 
     // ── Spectrum background thread ────────────────────────────────────────
@@ -52,7 +54,10 @@ OmniQAudioProcessorEditor::OmniQAudioProcessorEditor(OmniQAudioProcessor& p)
     setSize(960, 560);
 }
 
-OmniQAudioProcessorEditor::~OmniQAudioProcessorEditor() = default;
+OmniQAudioProcessorEditor::~OmniQAudioProcessorEditor()
+{
+    setLookAndFeel(nullptr);
+}
 
 //──────────────────────────────────────────────────────────────────────────────
 // Top-bar construction helpers

@@ -5,6 +5,7 @@
 #include "GUI/EQCurveComponent.h"
 #include "GUI/ControlPanelComponent.h"
 #include "GUI/SpectrumAnalyzer.h"
+#include "GUI/CustomLookAndFeel.h"
 #include "Utilities/PresetManager.h"
 
 //==============================================================================
@@ -29,12 +30,10 @@ private:
 
     // ── Spectrum thread ──────────────────────────────────────────────────
     std::unique_ptr<OmniQ::SpectrumAnalyzer> analyzer;
-
-    // ── Main display ─────────────────────────────────────────────────────
     std::unique_ptr<OmniQ::EQCurveComponent> eqCurve;
-
-    // ── Per-band bottom strip ─────────────────────────────────────────────
     std::unique_ptr<OmniQ::ControlPanelComponent> controlPanel;
+
+    OmniQ::CustomLookAndFeel customLookAndFeel;
 
     // ── Top-bar UI components ─────────────────────────────────────────────
     juce::ComboBox presetCombo;
