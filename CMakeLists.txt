@@ -13,7 +13,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../.. ${CMAKE_CURRENT_BINARY_DIR}/J
 # Plugin target
 # ──────────────────────────────────────────────────────────────────────────────
 juce_add_plugin(ProEQ
-    COMPANY_NAME             "Omni Audio"
+    COMPANY_NAME             "fenrikos"
     BUNDLE_ID                "com.omniaudio.OmniQ"
     IS_SYNTH                 FALSE
     NEEDS_MIDI_INPUT         FALSE
