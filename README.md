@@ -27,12 +27,31 @@ For an automatic installation into REAPER or your VST3 host of choice:
 
 ## 💻 Manual Build Instructions
 
-AxisEQ uses **CMake** and **JUCE 8**.
+AxisEQ uses **CMake** and **JUCE 8**. You can compile the plugin yourself from the command line.
+
+### Windows (Visual Studio)
+
+```powershell
+# 1. Generate project files (using your installed version of Visual Studio)
+cmake -B build -G "Visual Studio 18 2026" -A x64
+
+# 2. Build the plugin in Release mode using all CPU cores
+cmake --build build --config Release --parallel
+```
+
+Once compiled, the plugin will be located at:
+`build\AxisEQ_artefacts\Release\VST3\AxisEQ.vst3`
+
+### macOS (Xcode)
 
 ```bash
-# Generate project files
-cmake -B build -G "Visual Studio 17 2022"
+# 1. Generate Xcode project files
+cmake -B build -G Xcode -DCMAKE_BUILD_TYPE=Release
 
-# Build the plugin
-cmake --build build --config Release
+# 2. Build the plugin
+cmake --build build --config Release --parallel
 ```
+
+Once compiled, the plugins will be located at:
+- VST3: `build/AxisEQ_artefacts/Release/VST3/AxisEQ.vst3`
+- AU: `build/AxisEQ_artefacts/Release/AU/AxisEQ.component`
