@@ -1,7 +1,7 @@
 <div align="center">
   <img src="AxisEQ_logo.png" alt="AxisEQ Logo" width="200"/>
   <h1>AxisEQ</h1>
-  <p><b>A Premium 24-Band Dynamic Equalizer Plugin</b></p>
+  <p><b>A 24-band dynamic equalizer plugin (VST3 / AU)</b></p>
 </div>
 
 ---
@@ -12,16 +12,16 @@
 
 ## 🎛️ Overview
 
-**AxisEQ** is a professional-grade, high-performance parametric dynamic equalizer audio plugin built with JUCE. Designed for both precision mastering and creative mixing, AxisEQ provides unparalleled control over your audio with sleek, modern vector-based graphics and uncompromising DSP quality.
+**AxisEQ** is a parametric dynamic equalizer plugin built with JUCE and C++. Each band can be static or dynamic, work on any part of the stereo image, and be driven by an external sidechain. It is aimed at both mixing and mastering.
 
 ## ✨ Key Features
 
 - **24-Band Parametric EQ**: Create up to 24 independent EQ bands by simply clicking the canvas.
 - **Dynamic EQ & External Sidechain**: Every single band can act as a dynamic EQ. Duck specific frequencies using the internal signal, or route an external sidechain to trigger the dynamic gain reduction (e.g., ducking the bass guitar's 60Hz only when the kick drum hits).
 - **Advanced Mid/Side Processing**: Route any EQ band to operate on the Stereo, Left, Right, Mid, or Side channels for advanced stereo imaging and mastering control.
-- **Real-time Spectrum Analyzer**: Gorgeous, smooth visual feedback of your audio before and after processing.
-- **Premium User Interface**: Features a custom-built, modern LookAndFeel with vector arcs, floating text, and dynamic gain reduction visualizations.
-- **Zero Latency DSP**: Cascaded biquad filters utilizing RBJ Audio EQ Cookbook formulas guarantee analog-matched curves and lightning-fast processing with zero allocations on the audio thread.
+- **Real-time Spectrum Analyzer**: Shows the signal before and after processing.
+- **Custom User Interface**: A custom JUCE LookAndFeel drawn with vector graphics, including per-band gain reduction display.
+- **Zero Latency DSP**: Cascaded biquad filters based on the RBJ Audio EQ Cookbook formulas, with no memory allocation on the audio thread.
 
 ## 🛠️ Installation
 
