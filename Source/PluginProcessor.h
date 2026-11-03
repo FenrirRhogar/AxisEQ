@@ -39,6 +39,8 @@ public:
     const  juce::String getProgramName(int index) override;
     void   changeProgramName(int index, const juce::String& newName) override;
 
+    juce::AudioProcessorParameter* getBypassParameter() const override;
+
     void   getStateInformation(juce::MemoryBlock& destData) override;
     void   setStateInformation(const void* data, int sizeInBytes) override;
 
@@ -74,6 +76,11 @@ private:
 
     // Static EQ Processors (one per channel per band)
     std::array<AxisEQ::BandProcessor, AxisEQ::MaxBands> bands;
+
+    // Bypass crossfades to the untouched input. AxisEQ has no latency, so no delay is needed.
+    std::atomic<float>* bypass = nullptr;
+    juce::AudioBuffer<float> dryBuffer;
+    juce::SmoothedValue<float> bypassMix;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AxisEQAudioProcessor)
 };

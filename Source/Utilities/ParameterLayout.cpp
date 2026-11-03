@@ -215,6 +215,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
         ));
     }
 
+    // Global bypass, added after the bands so existing parameter order and automation are untouched.
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("master_bypass", 1), "Bypass", false));
+
     return layout;
 }
 

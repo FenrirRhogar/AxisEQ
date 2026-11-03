@@ -15,6 +15,13 @@ AxisEQAudioProcessor::AxisEQAudioProcessor()
     // pointers into the APVTS atomic storage, ready for audio-thread reads.
     for (int i = 0; i < AxisEQ::MaxBands; ++i)
         bandParams[static_cast<size_t>(i)].bindToAPVTS(apvts, i);
+
+    bypass = apvts.getRawParameterValue("master_bypass");
+}
+
+juce::AudioProcessorParameter* AxisEQAudioProcessor::getBypassParameter() const
+{
+    return apvts.getParameter("master_bypass");
 }
 
 AxisEQAudioProcessor::~AxisEQAudioProcessor() = default;
@@ -82,6 +89,10 @@ void AxisEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
     for (auto& band : bands)
         band.prepare(sampleRate);
+
+    dryBuffer.setSize(2, samplesPerBlock);
+    bypassMix.reset(sampleRate, 0.02);
+    bypassMix.setCurrentAndTargetValue(bypass->load() >= 0.5f ? 1.0f : 0.0f);
 }
 
 void AxisEQAudioProcessor::releaseResources() {}
@@ -137,9 +148,29 @@ void AxisEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     float* left  = mainBus.getWritePointer(0);
     float* right = numMainChannels > 1 ? mainBus.getWritePointer(1) : nullptr;
 
+    const int dryChannels = juce::jmin(numMainChannels, 2);
+    if (dryBuffer.getNumSamples() < numSamples)
+        dryBuffer.setSize(2, numSamples, false, false, true);
+    for (int ch = 0; ch < dryChannels; ++ch)
+        dryBuffer.copyFrom(ch, 0, mainBus, ch, 0, numSamples);
+
     for (int i = 0; i < AxisEQ::MaxBands; ++i)
         bands[static_cast<size_t>(i)].process(left, right, numSamples, scLeft, scRight,
                                               bandParams[static_cast<size_t>(i)]);
+
+    bypassMix.setTargetValue(bypass->load() >= 0.5f ? 1.0f : 0.0f);
+    if (bypassMix.isSmoothing() || bypassMix.getCurrentValue() > 0.0f)
+    {
+        for (int n = 0; n < numSamples; ++n)
+        {
+            const float b = bypassMix.getNextValue();
+            for (int ch = 0; ch < dryChannels; ++ch)
+            {
+                auto* out = mainBus.getWritePointer(ch);
+                out[n] += b * (dryBuffer.getSample(ch, n) - out[n]);
+            }
+        }
+    }
 
     // Capture post-filter audio into the output spectrum analyzer FIFO.
     const int channelsToCapture = juce::jmin(numMainChannels, 2);
@@ -163,6 +194,7 @@ void AxisEQAudioProcessor::setStateInformation(const void* data, int sizeInBytes
 
     if (xmlState != nullptr && xmlState->hasTagName(apvts.state.getType()))
         apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
+
 }
 
 //==============================================================================
