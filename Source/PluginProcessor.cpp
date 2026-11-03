@@ -80,18 +80,8 @@ void AxisEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
         outputFifo[ch].prepare(samplesPerBlock);
     }
 
-    // Prepare DSP processors
-    juce::dsp::ProcessSpec spec;
-    spec.sampleRate = sampleRate;
-    spec.maximumBlockSize = static_cast<juce::uint32>(samplesPerBlock);
-    spec.numChannels = 2;
-
-    for (int i = 0; i < AxisEQ::MaxBands; ++i)
-    {
-        leftStaticBands[i].prepare(sampleRate);
-        rightStaticBands[i].prepare(sampleRate);
-        dynamicBands[i].prepare(spec);
-    }
+    for (auto& band : bands)
+        band.prepare(sampleRate);
 }
 
 void AxisEQAudioProcessor::releaseResources() {}
@@ -142,155 +132,14 @@ void AxisEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         inputFifo[ch].push(mainBus.getReadPointer(ch), numSamples);
 
     // ─────────────────────────────────────────────────────────────────────
-    // Per-band DSP processing: Stereo, Mid, and Side Routing
+    // Bands in series. Each handles its own routing, smoothing, crossfades and dynamics.
     // ─────────────────────────────────────────────────────────────────────
+    float* left  = mainBus.getWritePointer(0);
+    float* right = numMainChannels > 1 ? mainBus.getWritePointer(1) : nullptr;
 
-    // 1. Update filter coefficients for all active bands
     for (int i = 0; i < AxisEQ::MaxBands; ++i)
-    {
-        if (! bandParams[i].shouldProcess()) continue;
-        
-        bool useDynamic = bandParams[i].isDynEnabled() && bandParams[i].filterUsesGain();
-        if (useDynamic)
-        {
-            AxisEQ::DynamicEQBandParameters dParams;
-            dParams.frequency = bandParams[i].getFrequency();
-            dParams.q = bandParams[i].getQ();
-            dParams.staticGainDb = bandParams[i].getGain();
-            dParams.thresholdDb = bandParams[i].getDynThreshold();
-            dParams.rangeDb = bandParams[i].getDynRange();
-            dParams.attackMs = bandParams[i].getDynAttackMs();
-            dParams.releaseMs = bandParams[i].getDynReleaseMs();
-            dParams.ratio = 2.0; // Hardcoded default, can be expanded later
-            dParams.useRms = false; // Peak detection
-            dParams.linked = (bandParams[i].getRoutingMode() == AxisEQ::RoutingMode::Stereo);
-            dynamicBands[i].setParameters(dParams);
-        }
-        else
-        {
-            leftStaticBands[i].updateParameters(bandParams[i]);
-            rightStaticBands[i].updateParameters(bandParams[i]);
-        }
-    }
-
-    // 2. Process Audio
-    const bool isStereo = (numMainChannels == 2);
-
-    if (isStereo)
-    {
-        float* left = mainBus.getWritePointer(0);
-        float* right = mainBus.getWritePointer(1);
-        
-        for (int i = 0; i < AxisEQ::MaxBands; ++i)
-        {
-            if (! bandParams[i].shouldProcess()) continue;
-            
-            auto routing = bandParams[i].getRoutingMode();
-            bool useDynamic = bandParams[i].isDynEnabled() && bandParams[i].filterUsesGain();
-            
-            if (useDynamic)
-            {
-                if (routing == AxisEQ::RoutingMode::Stereo)
-                {
-                    for (int s = 0; s < numSamples; ++s)
-                    {
-                        float scL = (bandParams[i].isDynExtScEnabled() && scLeft) ? scLeft[s] : left[s];
-                        float scR = (bandParams[i].isDynExtScEnabled() && scRight) ? scRight[s] : right[s];
-                        left[s] = dynamicBands[i].processSample(0, left[s], scL);
-                        right[s] = dynamicBands[i].processSample(1, right[s], scR);
-                    }
-                }
-                else if (routing == AxisEQ::RoutingMode::MidOnly)
-                {
-                    for (int s = 0; s < numSamples; ++s)
-                    {
-                        float m = (left[s] + right[s]) * 0.5f;
-                        float sd = (left[s] - right[s]) * 0.5f;
-                        
-                        float scM = m;
-                        if (bandParams[i].isDynExtScEnabled() && scLeft && scRight)
-                            scM = (scLeft[s] + scRight[s]) * 0.5f;
-                            
-                        m = dynamicBands[i].processSample(0, m, scM);
-                        left[s] = m + sd;
-                        right[s] = m - sd;
-                    }
-                }
-                else // Side
-                {
-                    for (int s = 0; s < numSamples; ++s)
-                    {
-                        float m = (left[s] + right[s]) * 0.5f;
-                        float sd = (left[s] - right[s]) * 0.5f;
-                        
-                        float scSd = sd;
-                        if (bandParams[i].isDynExtScEnabled() && scLeft && scRight)
-                            scSd = (scLeft[s] - scRight[s]) * 0.5f;
-                            
-                        sd = dynamicBands[i].processSample(0, sd, scSd);
-                        left[s] = m + sd;
-                        right[s] = m - sd;
-                    }
-                }
-            }
-            else
-            {
-                if (routing == AxisEQ::RoutingMode::Stereo)
-                {
-                    for (int s = 0; s < numSamples; ++s)
-                    {
-                        left[s] = leftStaticBands[i].processSample(left[s]);
-                        right[s] = rightStaticBands[i].processSample(right[s]);
-                    }
-                }
-                else if (routing == AxisEQ::RoutingMode::MidOnly)
-                {
-                    for (int s = 0; s < numSamples; ++s)
-                    {
-                        float m = (left[s] + right[s]) * 0.5f;
-                        float sd = (left[s] - right[s]) * 0.5f;
-                        m = leftStaticBands[i].processSample(m);
-                        left[s] = m + sd;
-                        right[s] = m - sd;
-                    }
-                }
-                else // Side
-                {
-                    for (int s = 0; s < numSamples; ++s)
-                    {
-                        float m = (left[s] + right[s]) * 0.5f;
-                        float sd = (left[s] - right[s]) * 0.5f;
-                        sd = leftStaticBands[i].processSample(sd);
-                        left[s] = m + sd;
-                        right[s] = m - sd;
-                    }
-                }
-            }
-        }
-    }
-    else // Mono
-    {
-        float* channel = mainBus.getWritePointer(0);
-        for (int i = 0; i < AxisEQ::MaxBands; ++i)
-        {
-            if (! bandParams[i].shouldProcess()) continue;
-            
-            if (bandParams[i].isDynEnabled() && bandParams[i].filterUsesGain())
-            {
-                for (int s = 0; s < numSamples; ++s)
-                {
-                    float scL = (bandParams[i].isDynExtScEnabled() && scLeft) ? scLeft[s] : channel[s];
-                    channel[s] = dynamicBands[i].processSample(0, channel[s], scL);
-                }
-            }
-            else
-            {
-                for (int s = 0; s < numSamples; ++s)
-                    channel[s] = leftStaticBands[i].processSample(channel[s]);
-            }
-        }
-    }
-    // ─────────────────────────────────────────────────────────────────────
+        bands[static_cast<size_t>(i)].process(left, right, numSamples, scLeft, scRight,
+                                              bandParams[static_cast<size_t>(i)]);
 
     // Capture post-filter audio into the output spectrum analyzer FIFO.
     const int channelsToCapture = juce::jmin(numMainChannels, 2);

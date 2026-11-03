@@ -1,5 +1,4 @@
 #include "EQCurveComponent.h"
-#include "../DSP/FilterProcessor.h"
 #include <complex>
 
 namespace AxisEQ

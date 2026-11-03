@@ -52,8 +52,7 @@ target_sources(AxisEQ PRIVATE
     Source/PluginEditor.cpp
     Source/Utilities/ParameterLayout.cpp
     Source/Utilities/PresetManager.cpp
-    Source/DSP/FilterProcessor.cpp
-    Source/DSP/DynamicEQProcessor.cpp
+    Source/DSP/BandProcessor.cpp
     Source/GUI/SpectrumAnalyzer.cpp
     Source/GUI/EQCurveComponent.cpp
     Source/GUI/ControlPanelComponent.cpp
@@ -109,7 +108,7 @@ option(AXISEQ_TESTS "Build the DSP unit tests" ON)
 if(AXISEQ_TESTS)
     juce_add_console_app(AxisEQTests PRODUCT_NAME "AxisEQTests")
     juce_generate_juce_header(AxisEQTests)
-    target_sources(AxisEQTests PRIVATE tests/DSPTests.cpp)
+    target_sources(AxisEQTests PRIVATE tests/DSPTests.cpp Source/DSP/BandProcessor.cpp)
     target_include_directories(AxisEQTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
     target_compile_definitions(AxisEQTests PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
     target_link_libraries(AxisEQTests PRIVATE juce::juce_audio_processors juce::juce_dsp

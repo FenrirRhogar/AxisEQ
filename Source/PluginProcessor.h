@@ -5,8 +5,7 @@
 #include "Utilities/ParameterLayout.h"
 #include "Utilities/SingleChannelSampleFifo.h"
 #include "DSP/FilterBand.h"
-#include "DSP/FilterProcessor.h"
-#include "DSP/DynamicEQProcessor.h"
+#include "DSP/BandProcessor.h"
 
 //==============================================================================
 /// AxisEQ audio processor — manages 24 independent parametric EQ bands,
@@ -65,7 +64,7 @@ public:
     float getDynamicGainDb(int bandIndex) const noexcept 
     { 
         if (bandIndex >= 0 && bandIndex < AxisEQ::MaxBands)
-            return dynamicBands[static_cast<size_t>(bandIndex)].getCurrentDynGainDb();
+            return bands[static_cast<size_t>(bandIndex)].getDynamicGainDb();
         return 0.0f;
     }
 
@@ -74,11 +73,7 @@ private:
     int    currentBlockSize   = 512;
 
     // Static EQ Processors (one per channel per band)
-    std::array<AxisEQ::CascadedBiquad, AxisEQ::MaxBands> leftStaticBands;
-    std::array<AxisEQ::CascadedBiquad, AxisEQ::MaxBands> rightStaticBands;
-    
-    // Dynamic EQ Processors (each can handle stereo internally)
-    std::array<AxisEQ::DynamicEQProcessor, AxisEQ::MaxBands> dynamicBands;
+    std::array<AxisEQ::BandProcessor, AxisEQ::MaxBands> bands;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AxisEQAudioProcessor)
 };
