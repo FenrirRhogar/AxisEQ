@@ -3,6 +3,8 @@
 #include <JuceHeader.h>
 #include "../PluginProcessor.h"
 #include "SpectrumAnalyzer.h"
+#include "DSP/BandDesign.h"
+#include <vector>
 
 namespace AxisEQ
 {
@@ -54,7 +56,9 @@ private:
     void drawNodes       (juce::Graphics& g, juce::Rectangle<float> b);
     void drawAddCursor   (juce::Graphics& g, juce::Rectangle<float> b);
 
-    double getCombinedMagnitudeResponse(double frequency);
+    double getSampleRateForCurve() const;
+    std::vector<BandDesign> designActiveBands() const;
+    double getCombinedMagnitudeResponse(const std::vector<BandDesign>& designs, double frequency) const;
 
     // ── Interaction helpers ────────────────────────────────────────────────
     /// Returns the index of the active band whose node is within hitRadius

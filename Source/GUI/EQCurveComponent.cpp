@@ -165,11 +165,12 @@ void EQCurveComponent::drawResponseCurve(juce::Graphics& g, juce::Rectangle<floa
     juce::Path curve;
     bool started = false;
     const float w = b.getWidth();
+    const auto designs = designActiveBands();
 
     for (int px = 0; px < static_cast<int>(w); ++px)
     {
         float freq  = getFrequencyForPosition(static_cast<float>(px), w);
-        double mag  = getCombinedMagnitudeResponse(static_cast<double>(freq));
+        double mag  = getCombinedMagnitudeResponse(designs, static_cast<double>(freq));
         float  db   = static_cast<float>(juce::Decibels::gainToDecibels(mag, -100.0));
         float  y    = getPositionForGain(db, b.getHeight());
 
@@ -497,79 +498,35 @@ void EQCurveComponent::mouseWheelMove(const juce::MouseEvent& /*e*/,
 //──────────────────────────────────────────────────────────────────────────────
 // Frequency response math
 //──────────────────────────────────────────────────────────────────────────────
-double EQCurveComponent::getCombinedMagnitudeResponse(double frequency)
+double EQCurveComponent::getSampleRateForCurve() const
 {
-    double sr = processor.getSampleRate();
-    if (sr <= 0.0) sr = 44100.0;
+    const double sr = processor.getSampleRate();
+    return sr > 0.0 ? sr : 44100.0;
+}
 
-    double w = 2.0 * juce::MathConstants<double>::pi * frequency / sr;
-    std::complex<double> z(std::cos(w), std::sin(w));
-    std::complex<double> total(1.0, 0.0);
-
+// Same filter design as the audio engine, so the curve shows exactly what is heard.
+// Designed once per repaint, then evaluated at every pixel.
+std::vector<BandDesign> EQCurveComponent::designActiveBands() const
+{
+    std::vector<BandDesign> designs;
+    const double sr = getSampleRateForCurve();
     for (int i = 0; i < MaxBands; ++i)
     {
-        if (!processor.bandParams[i].shouldProcess()) continue;
-
-        double A      = std::pow(10.0, processor.bandParams[i].getGain() / 40.0);
-        double w0     = 2.0 * juce::MathConstants<double>::pi
-                            * processor.bandParams[i].getFrequency() / sr;
-        double cos_w0 = std::cos(w0);
-        double sin_w0 = std::sin(w0);
-        double alpha  = sin_w0 / (2.0 * std::max(0.01f, processor.bandParams[i].getQ()));
-
-        double b0=1, b1=0, b2=0, a0=1, a1=0, a2=0;
-        switch (processor.bandParams[i].getFilterType())
-        {
-            case FilterType::Bell:
-                b0=1+alpha*A; b1=-2*cos_w0; b2=1-alpha*A;
-                a0=1+alpha/A; a1=-2*cos_w0; a2=1-alpha/A; break;
-            case FilterType::LowCut:
-                b0=(1+cos_w0)/2; b1=-(1+cos_w0); b2=(1+cos_w0)/2;
-                a0=1+alpha;      a1=-2*cos_w0;    a2=1-alpha; break;
-            case FilterType::HighCut:
-                b0=(1-cos_w0)/2; b1=1-cos_w0;  b2=(1-cos_w0)/2;
-                a0=1+alpha;      a1=-2*cos_w0;  a2=1-alpha; break;
-            case FilterType::LowShelf:
-                b0=A*((A+1)-(A-1)*cos_w0+2*std::sqrt(A)*alpha);
-                b1=2*A*((A-1)-(A+1)*cos_w0);
-                b2=A*((A+1)-(A-1)*cos_w0-2*std::sqrt(A)*alpha);
-                a0=(A+1)+(A-1)*cos_w0+2*std::sqrt(A)*alpha;
-                a1=-2*((A-1)+(A+1)*cos_w0);
-                a2=(A+1)+(A-1)*cos_w0-2*std::sqrt(A)*alpha; break;
-            case FilterType::HighShelf:
-                b0=A*((A+1)+(A-1)*cos_w0+2*std::sqrt(A)*alpha);
-                b1=-2*A*((A-1)+(A+1)*cos_w0);
-                b2=A*((A+1)+(A-1)*cos_w0-2*std::sqrt(A)*alpha);
-                a0=(A+1)-(A-1)*cos_w0+2*std::sqrt(A)*alpha;
-                a1=2*((A-1)-(A+1)*cos_w0);
-                a2=(A+1)-(A-1)*cos_w0-2*std::sqrt(A)*alpha; break;
-            case FilterType::Notch:
-                b0=1; b1=-2*cos_w0; b2=1;
-                a0=1+alpha; a1=-2*cos_w0; a2=1-alpha; break;
-            case FilterType::BandPass:
-                b0=alpha; b1=0; b2=-alpha;
-                a0=1+alpha; a1=-2*cos_w0; a2=1-alpha; break;
-            case FilterType::TiltShelf:
-            {
-                double th = std::tan(juce::MathConstants<double>::pi
-                                     * processor.bandParams[i].getFrequency() / sr);
-                b0=th+A; b1=th-A; b2=0;
-                a0=th*A+1; a1=th*A-1; a2=0; break;
-            }
-        }
-
-        std::complex<double> invZ  = std::pow(z, -1);
-        std::complex<double> invZ2 = std::pow(z, -2);
-        std::complex<double> num   = b0 + b1 * invZ + b2 * invZ2;
-        std::complex<double> den   = a0 + a1 * invZ + a2 * invZ2;
-        std::complex<double> H     = num / den;
-
-        int stages = processor.bandParams[i].filterUsesSlope()
-                         ? biquadStagesForSlope(processor.bandParams[i].getSlope()) : 1;
-        for (int s = 0; s < stages; ++s)
-            total *= H;
+        const auto& band = processor.bandParams[static_cast<size_t>(i)];
+        if (band.shouldProcess())
+            designs.push_back(designBand(band.getFilterType(), band.getSlope(), band.getFrequency(),
+                                         band.getQ(), band.getGain(), sr));
     }
-    return std::abs(total);
+    return designs;
+}
+
+double EQCurveComponent::getCombinedMagnitudeResponse(const std::vector<BandDesign>& designs, double frequency) const
+{
+    const double sr = getSampleRateForCurve();
+    double total = 1.0;
+    for (const auto& design : designs)
+        total *= design.magnitude(frequency, sr);
+    return total;
 }
 
 //──────────────────────────────────────────────────────────────────────────────
