@@ -101,3 +101,17 @@ target_link_libraries(AxisEQ
 if(AXISEQ_LTO)
     target_link_libraries(AxisEQ PUBLIC juce::juce_recommended_lto_flags)
 endif()
+
+# ──────────────────────────────────────────────────────────────────────────────
+# DSP unit tests (run build/AxisEQTests_artefacts/<config>/AxisEQTests)
+# ──────────────────────────────────────────────────────────────────────────────
+option(AXISEQ_TESTS "Build the DSP unit tests" ON)
+if(AXISEQ_TESTS)
+    juce_add_console_app(AxisEQTests PRODUCT_NAME "AxisEQTests")
+    juce_generate_juce_header(AxisEQTests)
+    target_sources(AxisEQTests PRIVATE tests/DSPTests.cpp)
+    target_include_directories(AxisEQTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
+    target_compile_definitions(AxisEQTests PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
+    target_link_libraries(AxisEQTests PRIVATE juce::juce_audio_processors juce::juce_dsp
+                                      PUBLIC juce::juce_recommended_config_flags)
+endif()
