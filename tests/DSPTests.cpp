@@ -1,8 +1,10 @@
-// AxisEQ DSP unit tests: run the AxisEQTests target; it exits non-zero on any failure.
+// AxisEQ unit tests: run the AxisEQTests target; it exits non-zero on any failure.
 
 #include <JuceHeader.h>
 #include "DSP/BandDesign.h"
 #include "DSP/BandProcessor.h"
+#include "Utilities/ParameterLayout.h"
+#include "Utilities/PresetManager.h"
 
 using namespace AxisEQ;
 
@@ -220,8 +222,87 @@ public:
 static BandProcessorTests bandProcessorTests;
 
 //==============================================================================
+/// The smallest processor that can own AxisEQ's parameter tree, for testing the preset manager.
+class TestProcessor : public juce::AudioProcessor
+{
+public:
+    TestProcessor() : apvts(*this, nullptr, "PARAMETERS", createParameterLayout()) {}
+
+    const juce::String getName() const override { return "AxisEQ test"; }
+    void prepareToPlay(double, int) override {}
+    void releaseResources() override {}
+    void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override {}
+    double getTailLengthSeconds() const override { return 0.0; }
+    bool acceptsMidi() const override { return false; }
+    bool producesMidi() const override { return false; }
+    juce::AudioProcessorEditor* createEditor() override { return nullptr; }
+    bool hasEditor() const override { return false; }
+    int getNumPrograms() override { return 1; }
+    int getCurrentProgram() override { return 0; }
+    void setCurrentProgram(int) override {}
+    const juce::String getProgramName(int) override { return {}; }
+    void changeProgramName(int, const juce::String&) override {}
+    void getStateInformation(juce::MemoryBlock&) override {}
+    void setStateInformation(const void*, int) override {}
+
+    juce::AudioProcessorValueTreeState apvts;
+};
+
+class PresetManagerTests : public juce::UnitTest
+{
+public:
+    PresetManagerTests() : juce::UnitTest("Preset manager", "AxisEQ") {}
+
+    void runTest() override
+    {
+        const auto tag = "AxisEQ test " + juce::String::toHexString(juce::Random::getSystemRandom().nextInt64());
+        const auto has = [] (PresetManager& m, const juce::String& name) {
+            m.scanUserPresetsFromDisk();
+            return m.getAllPresetNames().contains(name);
+        };
+        const auto remove = [] (PresetManager& m, const juce::String& name) {
+            m.scanUserPresetsFromDisk();
+            if (const int i = m.getAllPresetNames().indexOf(name); i >= 0)
+                m.deleteUserPreset(i);
+        };
+
+        TestProcessor a, b;
+        PresetManager first(a.apvts), second(b.apvts);
+
+        beginTest("Two instances can both save without losing each other's presets");
+        first.saveCurrentAsUserPreset(tag + " one");
+        second.saveCurrentAsUserPreset(tag + " two");   // this instance never saw "one"
+        expect(has(first, tag + " one"));
+        expect(has(first, tag + " two"));
+
+        beginTest("Deleting a preset removes only that preset");
+        remove(second, tag + " one");
+        expect(! has(first, tag + " one"));
+        expect(has(first, tag + " two"));
+
+        beginTest("Names with characters that are illegal in file names still save");
+        const auto awkward = tag + " drums/bus: v2?";
+        first.saveCurrentAsUserPreset(awkward);
+        expect(has(second, awkward));
+
+        remove(first, tag + " two");
+        remove(first, awkward);
+        expect(! has(second, tag + " two"));
+    }
+};
+
+static PresetManagerTests presetManagerTests;
+
+//==============================================================================
 int main()
 {
+   #if JUCE_LINUX
+    // Keep the preset tests out of the real ~/Documents.
+    const auto home = juce::File::getSpecialLocation(juce::File::tempDirectory).getChildFile("AxisEQTestsHome");
+    home.createDirectory();
+    setenv("HOME", home.getFullPathName().toRawUTF8(), 1);
+   #endif
+
     juce::UnitTestRunner runner;
     runner.setAssertOnFailure(false);
     runner.runTestsInCategory("AxisEQ");
