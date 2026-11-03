@@ -75,29 +75,31 @@ void PresetManager::saveCurrentAsUserPreset(const juce::String& name,
         b.dynRelease   = get("dyn_release");
     }
 
-    // Overwrite if same name exists in user presets
-    for (int i = numFactoryPresets; i < static_cast<int>(allPresets.size()); ++i)
-    {
-        if (allPresets[static_cast<size_t>(i)].name == name)
-        {
-            allPresets[static_cast<size_t>(i)] = p;
-            currentIndex = i;
-            saveUserPresetsToDisk();
-            return;
-        }
-    }
+    // Write only this preset's file, via a temporary file so a failed write can never
+    // leave a half-written preset. Saving under an existing name replaces that preset.
+    scanUserPresetsFromDisk();
+    const int existing = findUserPreset(name);
+    const auto file = existing >= 0 ? allPresets[static_cast<size_t>(existing)].file
+                                    : getUserPresetsDirectory().getNonexistentChildFile(
+                                          juce::File::createLegalFileName(name), ".xml", false);
 
-    allPresets.push_back(p);
-    currentIndex = static_cast<int>(allPresets.size()) - 1;
-    saveUserPresetsToDisk();
+    std::unique_ptr<juce::XmlElement> xml(presetToXml(p));
+    juce::TemporaryFile temp(file);
+    if (xml->writeTo(temp.getFile()))
+        temp.overwriteTargetFileWithTemporary();
+
+    scanUserPresetsFromDisk();
+    currentIndex = juce::jmax(0, findUserPreset(name));
 }
 
 void PresetManager::deleteUserPreset(int index)
 {
     if (index < numFactoryPresets || index >= static_cast<int>(allPresets.size())) return;
-    allPresets.erase(allPresets.begin() + index);
+
+    // Delete only this preset's own file; every other preset on disk is left alone.
+    allPresets[static_cast<size_t>(index)].file.deleteFile();
+    scanUserPresetsFromDisk();
     currentIndex = juce::jlimit(0, static_cast<int>(allPresets.size()) - 1, currentIndex);
-    saveUserPresetsToDisk();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -233,30 +235,27 @@ void PresetManager::scanUserPresetsFromDisk()
         allPresets.erase(allPresets.begin() + numFactoryPresets, allPresets.end());
 
     auto files = getUserPresetsDirectory().findChildFiles(juce::File::findFiles, false, "*.xml");
+    files.sort();
     for (auto& f : files)
     {
         if (auto xml = juce::XmlDocument::parse(f))
         {
             Preset p;
             if (xmlToPreset(*xml, p))
+            {
+                p.file = f;
                 allPresets.push_back(p);
+            }
         }
     }
 }
 
-void PresetManager::saveUserPresetsToDisk()
+int PresetManager::findUserPreset(const juce::String& name) const
 {
-    auto dir = getUserPresetsDirectory();
-    // Remove stale files
-    for (auto& f : dir.findChildFiles(juce::File::findFiles, false, "*.xml"))
-        f.deleteFile();
-
     for (int i = numFactoryPresets; i < static_cast<int>(allPresets.size()); ++i)
-    {
-        std::unique_ptr<juce::XmlElement> xml(presetToXml(allPresets[static_cast<size_t>(i)]));
-        auto file = dir.getChildFile(allPresets[static_cast<size_t>(i)].name + ".xml");
-        xml->writeTo(file);
-    }
+        if (allPresets[static_cast<size_t>(i)].name == name)
+            return i;
+    return -1;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

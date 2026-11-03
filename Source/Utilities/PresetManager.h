@@ -33,6 +33,8 @@ struct Preset
 
     // One entry per MaxBands (24).  Bands beyond the defined list are inactive.
     std::vector<PresetBand> bands;
+    // User presets only: the file it was read from, so deleting removes exactly that file.
+    juce::File file;
 };
 
 /// Manages factory and user presets.
@@ -62,8 +64,8 @@ public:
     void deleteUserPreset(int index);
 
     // ─── Persistence ─────────────────────────────────────────────────────────
+    /// Re-reads the user preset folder. Other plugin instances may have changed it.
     void scanUserPresetsFromDisk();
-    void saveUserPresetsToDisk();
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
@@ -78,6 +80,7 @@ private:
     void applyPreset(const Preset& p);
 
     juce::File getUserPresetsDirectory() const;
+    int findUserPreset(const juce::String& name) const;
 
     // Helpers for disk serialisation
     static juce::XmlElement* presetToXml(const Preset& p);
