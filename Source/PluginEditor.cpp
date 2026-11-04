@@ -29,7 +29,8 @@ AxisEQAudioProcessorEditor::AxisEQAudioProcessorEditor(AxisEQAudioProcessor& p)
     // ── Preset system ────────────────────────────────────────────────────
     setLookAndFeel(&customLookAndFeel);
     
-    presetManager = std::make_unique<AxisEQ::PresetManager>(processorRef.apvts);
+    presetManager = processorRef.presetManager.get();
+    presetManager->scanUserPresetsFromDisk();   // pick up presets saved by other instances
 
     // ── Spectrum background thread ────────────────────────────────────────
     analyzer = std::make_unique<AxisEQ::SpectrumAnalyzer>(processorRef.inputFifo, processorRef.outputFifo);

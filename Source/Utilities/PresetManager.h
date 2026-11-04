@@ -49,6 +49,10 @@ public:
     int            getNumPresets()     const noexcept { return static_cast<int>(allPresets.size()); }
     const Preset&  getPreset(int idx)  const          { return allPresets.at(static_cast<size_t>(idx)); }
     int            getCurrentIndex()   const noexcept { return currentIndex; }
+    int            getNumFactoryPresets() const noexcept { return numFactoryPresets; }
+
+    /// After a session restore: points the current index at the preset saved with the session.
+    void syncFromState();
     juce::StringArray getAllPresetNames() const;
 
     // ─── Load / Save ─────────────────────────────────────────────────────────

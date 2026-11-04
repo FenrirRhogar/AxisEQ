@@ -26,7 +26,7 @@ private:
     AxisEQAudioProcessor& processorRef;
 
     // ── Preset system ────────────────────────────────────────────────────
-    std::unique_ptr<AxisEQ::PresetManager> presetManager;
+    AxisEQ::PresetManager* presetManager = nullptr;   // owned by the processor
 
     // ── Spectrum thread ──────────────────────────────────────────────────
     std::unique_ptr<AxisEQ::SpectrumAnalyzer> analyzer;

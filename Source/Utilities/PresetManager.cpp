@@ -28,6 +28,15 @@ void PresetManager::loadPreset(int index)
     if (index < 0 || index >= static_cast<int>(allPresets.size())) return;
     currentIndex = index;
     applyPreset(allPresets[static_cast<size_t>(index)]);
+    apvts.state.setProperty("presetName", allPresets[static_cast<size_t>(index)].name, nullptr);
+}
+
+void PresetManager::syncFromState()
+{
+    const auto name = apvts.state.getProperty("presetName").toString();
+    for (int i = 0; i < static_cast<int>(allPresets.size()); ++i)
+        if (allPresets[static_cast<size_t>(i)].name == name)
+            currentIndex = i;
 }
 
 void PresetManager::loadNextPreset()
@@ -90,6 +99,7 @@ void PresetManager::saveCurrentAsUserPreset(const juce::String& name,
 
     scanUserPresetsFromDisk();
     currentIndex = juce::jmax(0, findUserPreset(name));
+    apvts.state.setProperty("presetName", name, nullptr);
 }
 
 void PresetManager::deleteUserPreset(int index)

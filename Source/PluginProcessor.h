@@ -6,6 +6,7 @@
 #include "Utilities/SingleChannelSampleFifo.h"
 #include "DSP/FilterBand.h"
 #include "DSP/BandProcessor.h"
+#include "Utilities/PresetManager.h"
 
 //==============================================================================
 /// AxisEQ audio processor — manages 24 independent parametric EQ bands,
@@ -53,6 +54,9 @@ public:
 
     /// Cached parameter pointers for every band, bound once at construction.
     std::array<AxisEQ::FilterBandParameters, AxisEQ::MaxBands> bandParams;
+
+    /// Owned here rather than by the editor, so presets work as host programs with the window closed.
+    std::unique_ptr<AxisEQ::PresetManager> presetManager;
 
     /// Lock-free FIFOs feeding the spectrum analyzer.
     /// Index 0 = left channel, index 1 = right channel.

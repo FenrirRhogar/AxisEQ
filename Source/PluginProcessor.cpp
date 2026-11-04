@@ -17,6 +17,7 @@ AxisEQAudioProcessor::AxisEQAudioProcessor()
         bandParams[static_cast<size_t>(i)].bindToAPVTS(apvts, i);
 
     bypass = apvts.getRawParameterValue("master_bypass");
+    presetManager = std::make_unique<AxisEQ::PresetManager>(apvts);
 }
 
 juce::AudioProcessorParameter* AxisEQAudioProcessor::getBypassParameter() const
@@ -37,10 +38,32 @@ bool   AxisEQAudioProcessor::producesMidi() const { return false; }
 bool   AxisEQAudioProcessor::isMidiEffect() const { return false; }
 double AxisEQAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
-int  AxisEQAudioProcessor::getNumPrograms()                        { return 1; }
-int  AxisEQAudioProcessor::getCurrentProgram()                     { return 0; }
-void AxisEQAudioProcessor::setCurrentProgram(int /*index*/)        {}
-const juce::String AxisEQAudioProcessor::getProgramName(int /*i*/) { return {}; }
+// Factory presets double as host programs.
+int AxisEQAudioProcessor::getNumPrograms()
+{
+    return juce::jmax(1, presetManager->getNumFactoryPresets());
+}
+
+int AxisEQAudioProcessor::getCurrentProgram()
+{
+    const int current = presetManager->getCurrentIndex();
+    return current < presetManager->getNumFactoryPresets() ? current : 0;
+}
+
+void AxisEQAudioProcessor::setCurrentProgram(int index)
+{
+    // Some hosts select the current program again right after restoring a session;
+    // reloading it would throw away the user's edits, so only real changes load.
+    if (index != presetManager->getCurrentIndex() && index < presetManager->getNumFactoryPresets())
+        presetManager->loadPreset(index);
+}
+
+const juce::String AxisEQAudioProcessor::getProgramName(int index)
+{
+    return index >= 0 && index < presetManager->getNumFactoryPresets() ? presetManager->getPreset(index).name
+                                                                       : juce::String();
+}
+
 void AxisEQAudioProcessor::changeProgramName(int, const juce::String&) {}
 
 bool AxisEQAudioProcessor::hasEditor() const { return true; }
@@ -193,7 +216,10 @@ void AxisEQAudioProcessor::setStateInformation(const void* data, int sizeInBytes
     std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
     if (xmlState != nullptr && xmlState->hasTagName(apvts.state.getType()))
+    {
         apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
+        presetManager->syncFromState();
+    }
 
     // A switch keeps whatever raw value the host last sent (0.7 still reads as "on"), and
     // replaceState skips parameters whose on/off state is unchanged, so snap them to 0 or 1.
