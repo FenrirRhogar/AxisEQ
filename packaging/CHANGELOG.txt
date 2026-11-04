@@ -1,0 +1,22 @@
+AXISEQ  -  CHANGELOG
+
+1.1.0
+Sound
+- Dynamic low shelves, high shelves and tilts now keep their shape (they used to turn into bells).
+- 24-96 dB/oct cuts are true Butterworth filters: -3 dB at the cutoff instead of 6-12 dB, so they no
+  longer dull the signal. 12 dB/oct cuts are unchanged.
+- Dynamic bands react only to their own frequency range, and stereo bands are linked.
+- A positive dynamic range now boosts (it had no effect before).
+- No more clicks or zipper noise when moving, switching or changing a band.
+- The EQ curve now shows exactly what you hear.
+Robustness
+- Fixed: saving a preset could delete presets saved from other AxisEQ instances.
+- Fixed: a crash after saving a preset.
+- Host bypass parameter with a click-free crossfade.
+- Factory presets are available as host programs; the current preset is remembered per session.
+- New look, with the Ansuz mark.
+- macOS AU, Linux LV2 and native builds for Windows, macOS and Linux.
+- Licence is now the GNU AGPL, version 3 or later.
+
+1.0.0
+- First release.
