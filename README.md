@@ -1,70 +1,59 @@
 <div align="center">
-  <img src="AxisEQ_logo.png" alt="AxisEQ Logo" width="200"/>
+  <img src="AxisEQ_logo.png" alt="AxisEQ" width="120"/>
   <h1>AxisEQ</h1>
-  <p><b>A 24-band dynamic equalizer plugin (VST3 / AU)</b></p>
+  <p><b>A 24-band dynamic equaliser by fenrikos</b><br/>VST3 on Windows, macOS and Linux · AU on macOS · LV2 on Linux</p>
 </div>
-
----
 
 <div align="center">
-  <img src="AxisEQ_screenshot.png" alt="AxisEQ Screenshot" width="800"/>
+  <img src="AxisEQ_screenshot.png" alt="AxisEQ" width="800"/>
 </div>
 
-## 🎛️ Overview
+## Features
 
-**AxisEQ** is a parametric dynamic equalizer plugin built with JUCE and C++. Each band can be static or dynamic, work on any part of the stereo image, and be driven by an external sidechain. It is aimed at both mixing and mastering.
+- **24 bands, 8 filter types:** bell, low and high shelf, tilt, notch, band-pass, and low and high cuts
+  from 6 to 96 dB/oct. Steep cuts are true Butterworth designs, -3 dB at the cutoff for every slope.
+- **Dynamic EQ on every gain band.** Each band listens through a detector matched to it (band-pass for bells,
+  low-pass for low shelves, high-pass for high shelves), so it only reacts to its own range. A negative range
+  cuts when the band gets loud; a positive range boosts.
+- **External sidechain per band,** e.g. duck the bass at 60 Hz only when the kick hits.
+- **Stereo, Mid or Side** routing per band. In stereo routing the dynamics are linked, so the image stays put.
+- **Click-free editing.** Moving a band is smoothed, and switching a band or changing its type, slope or
+  routing crossfades.
+- **Spectrum analyser** before and after, and an EQ curve drawn from the same filter design the audio uses.
+- **Presets:** factory presets (also available as host programs) and your own user presets, safe with several
+  instances open at once.
+- **Zero latency,** with a click-free bypass that hosts also see as their bypass control.
 
-## ✨ Key Features
+## Using it
 
-- **24-Band Parametric EQ**: Create up to 24 independent EQ bands by simply clicking the canvas.
-- **Dynamic EQ & External Sidechain**: Every single band can act as a dynamic EQ. Duck specific frequencies using the internal signal, or route an external sidechain to trigger the dynamic gain reduction (e.g., ducking the bass guitar's 60Hz only when the kick drum hits).
-- **Advanced Mid/Side Processing**: Route any EQ band to operate on the Stereo, Left, Right, Mid, or Side channels for advanced stereo imaging and mastering control.
-- **Real-time Spectrum Analyzer**: Shows the signal before and after processing.
-- **Custom User Interface**: A custom JUCE LookAndFeel drawn with vector graphics, including per-band gain reduction display.
-- **Zero Latency DSP**: Cascaded biquad filters based on the RBJ Audio EQ Cookbook formulas, with no memory allocation on the audio thread.
+Click the canvas to add a band, drag a node to move it, right-click to bypass it, double-click to remove it.
+Select a band to edit it in the strip below; turn on **Dynamic** to make it react to the signal.
 
-## 🛠️ Installation
+## Building
 
-You can download the pre-compiled VST3 and AU plugins directly from the [Releases](https://github.com/FenrirRhogar/AxisEQ/releases) tab.
+AxisEQ uses CMake and JUCE 8. JUCE is fetched automatically unless you point the build at a local checkout.
 
-Alternatively, for an automatic installation on Windows into REAPER or your VST3 host of choice:
-1. Clone the repository.
-2. Run the `install.bat` script located in the project root.
-3. The script will automatically compile the plugin using CMake and copy the VST3 file directly into your `C:\Program Files\Common Files\VST3` folder.
-
-## 💻 Manual Build Instructions
-
-AxisEQ uses **CMake** and **JUCE 8**. You can compile the plugin yourself from the command line.
-
-### Windows (Visual Studio)
-
-```powershell
-# 1. Generate project files (using your installed version of Visual Studio)
-cmake -B build -G "Visual Studio 18 2026" -A x64
-
-# 2. Build the plugin in Release mode using all CPU cores
+```sh
+cmake -B build -DCMAKE_BUILD_TYPE=Release            # optional: -DJUCE_DIR=/path/to/JUCE
 cmake --build build --config Release --parallel
 ```
 
-Once compiled, the plugin will be located at:
-`build\AxisEQ_artefacts\Release\VST3\AxisEQ.vst3`
+The plugins end up in `build/AxisEQ_artefacts/Release/`. Useful options:
 
-### macOS (Xcode)
+| Option | Default | |
+|---|---|---|
+| `AXISEQ_TESTS` | ON | Builds `AxisEQTests`: filter accuracy, click-free switching, dynamics and preset safety |
+| `AXISEQ_LTO` | ON | Link-time optimisation; turn off for faster development builds |
+| `AXISEQ_SNAPSHOT` | OFF | Builds `AxisEQ_snapshot`, which renders the editor to PNG |
 
-```bash
-# 1. Generate Xcode project files
-cmake -B build -G Xcode -DCMAKE_BUILD_TYPE=Release
+## Licence
 
-# 2. Build the plugin
-cmake --build build --config Release --parallel
-```
+Copyright (C) 2026 fenrikos.
 
-Once compiled, the plugins will be located at:
-- VST3: `build/AxisEQ_artefacts/Release/VST3/AxisEQ.vst3`
-- AU: `build/AxisEQ_artefacts/Release/AU/AxisEQ.component`
+AxisEQ is free software: you can redistribute it and/or modify it under the terms of the
+[GNU Affero General Public License](LICENSE) as published by the Free Software Foundation, either version 3
+of the License, or (at your option) any later version. It is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
-## ☕ Support the Project
-
-AxisEQ is completely free and open-source. However, if you use it in your mixes and find it helpful, please consider **[buying me a coffee on Gumroad!](https://fenrikos.gumroad.com/l/axiseq)** 
-
-Your support helps keep this project alive and funds the development of future audio plugins!
+AxisEQ uses [JUCE](https://juce.com) under the AGPLv3, the VST 3 SDK (MIT) and LV2 (ISC).
