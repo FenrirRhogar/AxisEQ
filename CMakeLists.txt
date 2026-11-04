@@ -115,3 +115,14 @@ if(AXISEQ_TESTS)
     target_link_libraries(AxisEQTests PRIVATE juce::juce_audio_processors juce::juce_dsp
                                       PUBLIC juce::juce_recommended_config_flags)
 endif()
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Optional: AxisEQ_snapshot renders the editor to PNG (store artwork, visual checks)
+# ──────────────────────────────────────────────────────────────────────────────
+option(AXISEQ_SNAPSHOT "Build the editor snapshot tool" OFF)
+if(AXISEQ_SNAPSHOT)
+    add_executable(AxisEQ_snapshot tools/Snapshot.cpp)
+    target_include_directories(AxisEQ_snapshot PRIVATE $<TARGET_PROPERTY:AxisEQ,INCLUDE_DIRECTORIES>)
+    target_compile_definitions(AxisEQ_snapshot PRIVATE $<TARGET_PROPERTY:AxisEQ,COMPILE_DEFINITIONS>)
+    target_link_libraries(AxisEQ_snapshot PRIVATE AxisEQ)
+endif()
