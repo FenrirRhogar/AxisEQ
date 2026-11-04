@@ -1,12 +1,14 @@
 // Renders the AxisEQ editor to PNG while feeding it a synthetic mix, so the meters and
 // displays show live content. Used for README screenshots and visual checks.
-//   <Plugin>_snapshot out.png [factoryPresetIndex] [--bench] [--scale N]
+//   AxisEQ_snapshot out.png [factoryPresetIndex] [--bench] [--scale N] [--band N]
 // --bench also prints the average time to paint one full frame of the editor.
 // --scale renders at N times the editor's size (e.g. 2 for store artwork).
+// --band selects band N (0-based) so the band controls are shown.
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
+#include "GUI/ControlPanelComponent.h"
 #include <cstdio>
 
 namespace
@@ -73,6 +75,7 @@ int main (int argc, char* argv[])
 
     bool bench = false;
     float scale = 1.0f;
+    int band = -1;
     for (int i = 3; i < argc; ++i)
     {
         const juce::String arg (argv[i]);
@@ -80,7 +83,14 @@ int main (int argc, char* argv[])
             bench = true;
         else if (arg == "--scale" && i + 1 < argc)
             scale = juce::String (argv[++i]).getFloatValue();
+        else if (arg == "--band" && i + 1 < argc)
+            band = juce::String (argv[++i]).getIntValue();
     }
+
+    if (band >= 0)
+        for (auto* child : editor->getChildren())
+            if (auto* panel = dynamic_cast<AxisEQ::ControlPanelComponent*> (child))
+                panel->setSelectedBand (band);
 
     if (bench)
     {
