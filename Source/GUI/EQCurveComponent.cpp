@@ -1,4 +1,5 @@
 #include "EQCurveComponent.h"
+#include "Theme.h"
 #include <complex>
 
 namespace AxisEQ
@@ -9,15 +10,16 @@ namespace AxisEQ
 //──────────────────────────────────────────────────────────────────────────────
 namespace
 {
-    juce::Colour BG_EQ   { 0xFF0D0D1A };
-    juce::Colour GRID    { 0x18FFFFFF };
-    juce::Colour GRID_0  { 0x44FFFFFF };   // 0 dB line
-    juce::Colour LABEL   { 0x88FFFFFF };
-    juce::Colour CURVE   { 0xFFFFFFFF };
-    juce::Colour FILL    { 0x12FFFFFF };
-    juce::Colour SPEC_IN { 0x2C3D84FF };
-    juce::Colour SPEC_OUT{ 0x3800E676 };
-    juce::Colour ADD_HINT{ 0x55FFFFFF };   // ghost cursor when no hover
+    // Glass display in the fenrikos style, tinted with the AxisEQ accent.
+    const juce::Colour BG_EQ   = Theme::glass;
+    const juce::Colour GRID    = Theme::accent.withAlpha(0.09f);
+    const juce::Colour GRID_0  = Theme::accent.withAlpha(0.30f);   // 0 dB line
+    const juce::Colour LABEL   = Theme::accent.withAlpha(0.55f);
+    const juce::Colour CURVE   = Theme::accent.brighter(0.6f);
+    const juce::Colour FILL    = Theme::accent.withAlpha(0.10f);
+    const juce::Colour SPEC_IN = Theme::accent.withAlpha(0.12f);
+    const juce::Colour SPEC_OUT= Theme::accent.withAlpha(0.28f);
+    const juce::Colour ADD_HINT= Theme::accent.withAlpha(0.45f);   // ghost cursor when no hover
 }
 
 //──────────────────────────────────────────────────────────────────────────────
@@ -57,7 +59,13 @@ void EQCurveComponent::paint(juce::Graphics& g)
 {
     auto b = getLocalBounds().toFloat();
 
+    juce::Path screen;
+    screen.addRoundedRectangle(b, 8.0f);
+    g.reduceClipRegion(screen);
     g.setColour(BG_EQ);
+    g.fillRect(b);
+    g.setGradientFill(juce::ColourGradient(Theme::accent.withAlpha(0.10f), b.getCentreX(), b.getBottom(),
+                                           Theme::accent.withAlpha(0.0f), b.getCentreX(), b.getY(), true));
     g.fillRect(b);
 
     drawGrid         (g, b);
@@ -85,7 +93,7 @@ void EQCurveComponent::drawGrid(juce::Graphics& g, juce::Rectangle<float> b)
         g.drawVerticalLine(static_cast<int>(x), b.getY(), b.getBottom());
 
         g.setColour(LABEL);
-        g.setFont(9.5f);
+        g.setFont(Theme::mono(10.0f));
         juce::String txt = f >= 1000.f ? (juce::String(f / 1000.f, f >= 10000.f ? 0 : 1) + "k") : juce::String(static_cast<int>(f));
         g.drawText(txt, static_cast<int>(x) + 3, static_cast<int>(b.getBottom()) - 14, 32, 12,
                    juce::Justification::centredLeft, false);
@@ -101,7 +109,7 @@ void EQCurveComponent::drawGrid(juce::Graphics& g, juce::Rectangle<float> b)
         if (gv != 0.f)
         {
             g.setColour(LABEL);
-            g.setFont(9.5f);
+            g.setFont(Theme::mono(10.0f));
             g.drawText((gv > 0 ? "+" : "") + juce::String(static_cast<int>(gv)),
                        4, static_cast<int>(y) - 12, 28, 12, juce::Justification::centredLeft, false);
         }
@@ -186,9 +194,7 @@ void EQCurveComponent::drawResponseCurve(juce::Graphics& g, juce::Rectangle<floa
     g.setColour(FILL);
     g.fillPath(fill);
 
-    g.setColour(CURVE);
-    g.strokePath(curve, juce::PathStrokeType(1.8f,
-        juce::PathStrokeType::mitered, juce::PathStrokeType::rounded));
+    Theme::glow(g, curve, CURVE, 2.0f);
 }
 
 //──────────────────────────────────────────────────────────────────────────────
