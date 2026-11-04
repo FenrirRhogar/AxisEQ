@@ -162,7 +162,7 @@ void AxisEQAudioProcessorEditor::onSavePreset()
                                              juce::dontSendNotification);
                 }
             }
-            delete dialog;
+            // No delete here: enterModalState(..., true) deletes the dialog once this returns.
         }), true);
 }
 
