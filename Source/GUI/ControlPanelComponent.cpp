@@ -66,6 +66,16 @@ void ControlPanelComponent::setSelectedBand(int idx)
 {
     if (currentBandIndex == idx) return;
     currentBandIndex = idx;
+
+    // The main knobs take the band's colour, matching its node on the canvas.
+    if (idx >= 0)
+    {
+        const auto colour = BandColours[static_cast<size_t>(idx)];
+        for (auto* s : { &freqSlider, &gainSlider, &qSlider })
+            s->setColour(juce::Slider::rotarySliderFillColourId, colour);
+        activeBtn.setColour(juce::TextButton::buttonOnColourId, colour);
+    }
+
     rebuildAttachments();
     updateVisibility();
     resized();
@@ -84,7 +94,7 @@ void ControlPanelComponent::setupKnob(juce::Slider& s, juce::Label& l, const juc
     s.setColour(juce::Slider::thumbColourId,               accent().brighter(0.3f));
     s.setColour(juce::Slider::textBoxTextColourId,         textHi());
     s.setColour(juce::Slider::textBoxOutlineColourId,      juce::Colours::transparentWhite);
-    s.setColour(juce::Slider::textBoxBackgroundColourId,   border().withAlpha(0.6f));
+    s.setColour(juce::Slider::textBoxBackgroundColourId,   juce::Colours::transparentBlack);
     addAndMakeVisible(s);
 
     l.setText(cap, juce::dontSendNotification);
@@ -103,7 +113,7 @@ void ControlPanelComponent::setupDynKnob(juce::Slider& s, juce::Label& l, const 
     s.setColour(juce::Slider::thumbColourId,               dynAccent().brighter(0.3f));
     s.setColour(juce::Slider::textBoxTextColourId,         textHi());
     s.setColour(juce::Slider::textBoxOutlineColourId,      juce::Colours::transparentWhite);
-    s.setColour(juce::Slider::textBoxBackgroundColourId,   border().withAlpha(0.6f));
+    s.setColour(juce::Slider::textBoxBackgroundColourId,   juce::Colours::transparentBlack);
     addAndMakeVisible(s);
 
     l.setText(cap, juce::dontSendNotification);

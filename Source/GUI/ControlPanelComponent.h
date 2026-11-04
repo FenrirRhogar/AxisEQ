@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "../PluginProcessor.h"
+#include "Theme.h"
 
 namespace AxisEQ
 {
@@ -60,11 +61,12 @@ private:
     void rebuildAttachments();
     void updateVisibility();
 
-    static juce::Colour bgCol()     { return juce::Colour(0xFF0C0C1E); }
-    static juce::Colour accent()    { return juce::Colour(0xFF3D84FF); }
-    static juce::Colour textHi()    { return juce::Colour(0xFFE8E8FF); }
-    static juce::Colour textLo()    { return juce::Colour(0xFF5A5A80); }
-    static juce::Colour border()    { return juce::Colour(0xFF1C1C38); }
+    // The editor draws the card behind the strip, so the strip itself is transparent.
+    static juce::Colour bgCol()     { return juce::Colours::transparentBlack; }
+    static juce::Colour accent()    { return Theme::accent; }
+    static juce::Colour textHi()    { return Theme::text; }
+    static juce::Colour textLo()    { return Theme::textDim; }
+    static juce::Colour border()    { return Theme::track; }
     static juce::Colour dynAccent() { return juce::Colour(0xFF9B5FFF); }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ControlPanelComponent)
