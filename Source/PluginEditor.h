@@ -6,13 +6,15 @@
 #include "GUI/ControlPanelComponent.h"
 #include "GUI/SpectrumAnalyzer.h"
 #include "GUI/CustomLookAndFeel.h"
+#include "GUI/PresetBar.h"
+#include "GUI/PowerSwitch.h"
 #include "Utilities/PresetManager.h"
 
 //==============================================================================
-/// AxisEQ top-level editor. Owns:
-///   - TopBarComponent  (logo | preset browser | output gain | bypass)
-///   - EQCurveComponent (spectrum + interactive curve + nodes)
-///   - ControlPanelComponent (per-band strip, docked at the bottom)
+/// AxisEQ top-level editor:
+///   - header: Ansuz mark and wordmark | preset bar | power switch
+///   - EQCurveComponent (spectrum + interactive curve + nodes) in a glass card
+///   - ControlPanelComponent (per-band strip) in a card along the bottom
 class AxisEQAudioProcessorEditor final : public juce::AudioProcessorEditor
 {
 public:
@@ -23,36 +25,23 @@ public:
     void resized() override;
 
 private:
+    static constexpr int HeaderHeight = 66, Margin = 16, FooterHeight = 26;
+
     AxisEQAudioProcessor& processorRef;
-
-    // ── Preset system ────────────────────────────────────────────────────
     AxisEQ::PresetManager* presetManager = nullptr;   // owned by the processor
+    AxisEQ::CustomLookAndFeel customLookAndFeel;
 
-    // ── Spectrum thread ──────────────────────────────────────────────────
     std::unique_ptr<AxisEQ::SpectrumAnalyzer> analyzer;
     std::unique_ptr<AxisEQ::EQCurveComponent> eqCurve;
     std::unique_ptr<AxisEQ::ControlPanelComponent> controlPanel;
+    std::unique_ptr<AxisEQ::PresetBar> presetBar;
+    AxisEQ::PowerSwitch power;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerAttachment;
 
-    AxisEQ::CustomLookAndFeel customLookAndFeel;
+    juce::Rectangle<int> canvasCard, panelCard;
+    juce::Image background;   // everything static, redrawn only on resize
 
-    // ── Top-bar UI components ─────────────────────────────────────────────
-    juce::ComboBox presetCombo;
-    juce::TextButton prevPresetBtn { "<" };
-    juce::TextButton nextPresetBtn { ">" };
-    juce::TextButton savePresetBtn { "Save" };
-    juce::TextButton resetBtn      { "Reset" };
-
-    // ── Output gain slider ────────────────────────────────────────────────
-    // (future expansion — placeholder style only for now)
-
-    void buildTopBar();
-    void layoutTopBar(juce::Rectangle<int>& area);
-
-    void populatePresetCombo();
-    void onPresetComboChanged();
     void onSavePreset();
-    void onResetPreset();
-
     void paintBackground(juce::Graphics& g);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AxisEQAudioProcessorEditor)

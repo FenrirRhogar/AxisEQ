@@ -1,21 +1,9 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "GUI/Theme.h"
 #include "Utilities/Constants.h"
 
-//──────────────────────────────────────────────────────────────────────────────
-// Colour palette — single source of truth for the editor chrome
-//──────────────────────────────────────────────────────────────────────────────
-namespace
-{
-    const juce::Colour BG_TOP     { 0xFF0D0D1A };
-    const juce::Colour BG_BOT     { 0xFF070710 };
-    const juce::Colour ACCENT_1   { 0xFF3D84FF }; // Blue
-    const juce::Colour ACCENT_2   { 0xFF9B5FFF }; // Purple
-    const juce::Colour PANEL_BG   { 0xFF111122 };
-    const juce::Colour TEXT_HI    { 0xFFE8E8FF };
-    const juce::Colour TEXT_LO    { 0xFF6868A0 };
-    const juce::Colour BORDER     { 0xFF252540 };
-}
+using namespace AxisEQ;
 
 //──────────────────────────────────────────────────────────────────────────────
 // Constructor / destructor
@@ -23,24 +11,20 @@ namespace
 AxisEQAudioProcessorEditor::AxisEQAudioProcessorEditor(AxisEQAudioProcessor& p)
     : AudioProcessorEditor(&p), processorRef(p)
 {
-    setResizable(true, true);
-    setResizeLimits(800, 440, 2560, 1440);
-
-    // ── Preset system ────────────────────────────────────────────────────
     setLookAndFeel(&customLookAndFeel);
-    
+
     presetManager = processorRef.presetManager.get();
     presetManager->scanUserPresetsFromDisk();   // pick up presets saved by other instances
 
     // ── Spectrum background thread ────────────────────────────────────────
-    analyzer = std::make_unique<AxisEQ::SpectrumAnalyzer>(processorRef.inputFifo, processorRef.outputFifo);
+    analyzer = std::make_unique<SpectrumAnalyzer>(processorRef.inputFifo, processorRef.outputFifo);
 
     // ── EQ Curve ──────────────────────────────────────────────────────────
-    eqCurve = std::make_unique<AxisEQ::EQCurveComponent>(processorRef, *analyzer);
+    eqCurve = std::make_unique<EQCurveComponent>(processorRef, *analyzer);
     addAndMakeVisible(*eqCurve);
 
     // ── Control strip ─────────────────────────────────────────────────────
-    controlPanel = std::make_unique<AxisEQ::ControlPanelComponent>(processorRef);
+    controlPanel = std::make_unique<ControlPanelComponent>(processorRef);
     addAndMakeVisible(*controlPanel);
 
     eqCurve->onNodeSelected = [this](int bandIndex)
@@ -48,11 +32,19 @@ AxisEQAudioProcessorEditor::AxisEQAudioProcessorEditor(AxisEQAudioProcessor& p)
         controlPanel->setSelectedBand(bandIndex);
     };
 
-    // ── Top bar ───────────────────────────────────────────────────────────
-    buildTopBar();
+    // ── Header: presets and power ─────────────────────────────────────────
+    presetBar = std::make_unique<PresetBar>(*presetManager);
+    presetBar->onSaveRequested = [this] { onSavePreset(); };
+    addAndMakeVisible(*presetBar);
 
-    // setSize MUST come last so resized() can find all children
-    setSize(960, 560);
+    powerAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        processorRef.apvts, "master_bypass", power);
+    addAndMakeVisible(power);
+
+    // Resize limits and size come last: both trigger resized(), which needs every child.
+    setResizable(true, true);
+    setResizeLimits(860, 520, 2560, 1440);
+    setSize(980, 620);
 }
 
 AxisEQAudioProcessorEditor::~AxisEQAudioProcessorEditor()
@@ -61,91 +53,18 @@ AxisEQAudioProcessorEditor::~AxisEQAudioProcessorEditor()
 }
 
 //──────────────────────────────────────────────────────────────────────────────
-// Top-bar construction helpers
+// Presets
 //──────────────────────────────────────────────────────────────────────────────
-void AxisEQAudioProcessorEditor::buildTopBar()
-{
-    // ── Preset ComboBox ───────────────────────────────────────────────────
-    presetCombo.setJustificationType(juce::Justification::centred);
-    presetCombo.setColour(juce::ComboBox::backgroundColourId, PANEL_BG);
-    presetCombo.setColour(juce::ComboBox::textColourId,       TEXT_HI);
-    presetCombo.setColour(juce::ComboBox::outlineColourId,    BORDER);
-    presetCombo.setColour(juce::ComboBox::arrowColourId,      ACCENT_1);
-    populatePresetCombo();
-    presetCombo.onChange = [this] { onPresetComboChanged(); };
-    addAndMakeVisible(presetCombo);
-
-    // ── Navigation buttons ────────────────────────────────────────────────
-    auto styleBtn = [&](juce::TextButton& btn)
-    {
-        btn.setColour(juce::TextButton::buttonColourId,   PANEL_BG);
-        btn.setColour(juce::TextButton::buttonOnColourId, ACCENT_1);
-        btn.setColour(juce::TextButton::textColourOffId,  TEXT_HI);
-        btn.setColour(juce::ComboBox::outlineColourId,    BORDER);
-        addAndMakeVisible(btn);
-    };
-
-    styleBtn(prevPresetBtn);
-    styleBtn(nextPresetBtn);
-    styleBtn(savePresetBtn);
-    styleBtn(resetBtn);
-
-    prevPresetBtn.onClick = [this]
-    {
-        presetManager->loadPreviousPreset();
-        populatePresetCombo();
-        presetCombo.setSelectedId(presetManager->getCurrentIndex() + 1,
-                                  juce::dontSendNotification);
-    };
-
-    nextPresetBtn.onClick = [this]
-    {
-        presetManager->loadNextPreset();
-        populatePresetCombo();
-        presetCombo.setSelectedId(presetManager->getCurrentIndex() + 1,
-                                  juce::dontSendNotification);
-    };
-
-    savePresetBtn.onClick = [this] { onSavePreset(); };
-    resetBtn.onClick      = [this] { onResetPreset(); };
-}
-
-void AxisEQAudioProcessorEditor::populatePresetCombo()
-{
-    presetCombo.clear(juce::dontSendNotification);
-
-    // Group presets by category using header items
-    juce::String lastCat;
-    int id = 1;
-    for (int i = 0; i < presetManager->getNumPresets(); ++i)
-    {
-        const auto& p = presetManager->getPreset(i);
-        if (p.category != lastCat)
-        {
-            presetCombo.addSectionHeading(p.category);
-            lastCat = p.category;
-        }
-        presetCombo.addItem(p.name, id++);
-    }
-
-    // Reflect current selection
-    presetCombo.setSelectedId(presetManager->getCurrentIndex() + 1,
-                              juce::dontSendNotification);
-}
-
-void AxisEQAudioProcessorEditor::onPresetComboChanged()
-{
-    const int selectedId = presetCombo.getSelectedId();
-    if (selectedId > 0)
-        presetManager->loadPreset(selectedId - 1);
-}
-
 void AxisEQAudioProcessorEditor::onSavePreset()
 {
-    auto* dialog = new juce::AlertWindow("Save Preset",
-                                          "Enter a name for this preset:",
-                                          juce::MessageBoxIconType::NoIcon);
-    dialog->addTextEditor("name", "My Preset");
+    const int current = presetManager->getCurrentIndex();
+    const auto suggestion = current >= presetManager->getNumFactoryPresets()
+                                ? presetManager->getPreset(current).name : juce::String("My Preset");
+
+    auto* dialog = new juce::AlertWindow("Save Preset", "Enter a name for this preset:",
+                                         juce::MessageBoxIconType::NoIcon, this);
+    dialog->setLookAndFeel(&customLookAndFeel);
+    dialog->addTextEditor("name", suggestion);
     dialog->addButton("Save",   1, juce::KeyPress(juce::KeyPress::returnKey));
     dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
 
@@ -158,65 +77,62 @@ void AxisEQAudioProcessorEditor::onSavePreset()
                 if (name.isNotEmpty())
                 {
                     presetManager->saveCurrentAsUserPreset(name);
-                    populatePresetCombo();
-                    presetCombo.setSelectedId(presetManager->getCurrentIndex() + 1,
-                                             juce::dontSendNotification);
+                    presetBar->refresh();
                 }
             }
             // No delete here: enterModalState(..., true) deletes the dialog once this returns.
         }), true);
 }
 
-void AxisEQAudioProcessorEditor::onResetPreset()
-{
-    presetManager->loadPreset(0); // Load "Flat"
-    presetCombo.setSelectedId(1, juce::dontSendNotification);
-}
-
 //──────────────────────────────────────────────────────────────────────────────
-// paint — draws the full chrome: background, header bar, borders
+// paint — everything static lives in a cached image, redrawn only on resize
 //──────────────────────────────────────────────────────────────────────────────
 void AxisEQAudioProcessorEditor::paintBackground(juce::Graphics& g)
 {
-    auto bounds = getLocalBounds().toFloat();
+    const auto bounds = getLocalBounds().toFloat();
+    g.setGradientFill(juce::ColourGradient(Theme::plateTop, 0.0f, 0.0f, Theme::plateBottom, 0.0f, bounds.getBottom(), false));
+    g.fillAll();
 
-    // Rich dark gradient base
-    g.setGradientFill(juce::ColourGradient(
-        BG_TOP, bounds.getCentreX(), bounds.getY(),
-        BG_BOT, bounds.getCentreX(), bounds.getBottom(),
-        false));
-    g.fillRect(bounds);
+    // Soft accent glow from the top edge.
+    g.setGradientFill(juce::ColourGradient(Theme::accent.withAlpha(0.16f), bounds.getCentreX(), 0.0f,
+                                           Theme::accent.withAlpha(0.0f), bounds.getCentreX(), 90.0f, false));
+    g.fillRect(bounds.withHeight(90.0f));
+    g.setColour(Theme::accent);
+    g.fillRect(bounds.withHeight(2.0f));
 
-    // Header bar fill
-    auto headerRect = bounds.removeFromTop(48.0f);
-    g.setColour(PANEL_BG.withAlpha(0.95f));
-    g.fillRect(headerRect);
+    // Header: Ansuz mark, wordmark and tagline.
+    Theme::fillRune(g, Theme::ansuz({ 16.0f, 16.0f, 34.0f, 34.0f }));
+    const auto wordFont = juce::FontOptions(23.0f, juce::Font::bold).withKerningFactor(0.2f);
+    g.setFont(wordFont);
+    g.setColour(juce::Colours::black.withAlpha(0.35f));
+    g.drawText("AXIS", juce::Rectangle<float>(56.0f, 15.0f, 120.0f, 26.0f), juce::Justification::centredLeft);
+    g.setColour(Theme::text);
+    g.drawText("AXIS", juce::Rectangle<float>(56.0f, 14.0f, 120.0f, 26.0f), juce::Justification::centredLeft);
+    const float eqX = 56.0f + juce::GlyphArrangement::getStringWidth(wordFont, "AXIS") + 10.0f;
+    g.setColour(Theme::accent.brighter(0.25f));
+    g.drawText("EQ", juce::Rectangle<float>(eqX, 14.0f, 60.0f, 26.0f), juce::Justification::centredLeft);
+    g.setFont(Theme::font(11.5f));
+    g.setColour(Theme::textDim);
+    g.drawText("24-band dynamic equaliser", juce::Rectangle<float>(57.0f, 40.0f, 300.0f, 14.0f), juce::Justification::centredLeft);
 
-    // Accent gradient line below header
-    g.setGradientFill(juce::ColourGradient(
-        ACCENT_1.withAlpha(0.0f), 0.0f, 0.0f,
-        ACCENT_2,                 bounds.getCentreX(), 0.0f,
-        false));
-    g.fillRect(juce::Rectangle<float>(0.0f, 48.0f, static_cast<float>(getWidth()), 2.0f));
+    g.setColour(Theme::cardEdge);
+    g.fillRect(20.0f, 66.0f, bounds.getWidth() - 40.0f, 1.0f);
 
-    // Footer divider above control strip
-    const float footerY = static_cast<float>(getHeight()) - AxisEQ::ControlPanelComponent::PanelHeight - 1.0f;
-    g.setColour(BORDER);
-    g.fillRect(juce::Rectangle<float>(0.0f, footerY, static_cast<float>(getWidth()), 1.0f));
+    Theme::card(g, canvasCard.toFloat(), 12.0f);
+    Theme::card(g, panelCard.toFloat(), 12.0f);
+
+    g.setFont(juce::FontOptions(10.0f, juce::Font::bold).withKerningFactor(0.25f));
+    const auto footer = bounds.withTop(bounds.getBottom() - static_cast<float>(FooterHeight));
+    g.setColour(Theme::textDim.withAlpha(0.8f));
+    g.drawText("FENRIKOS", footer.withTrimmedRight(24.0f), juce::Justification::centredRight);
+    g.setColour(Theme::textDim.withAlpha(0.45f));
+    g.drawText("AXISEQ " + juce::String(JucePlugin_VersionString), footer.withTrimmedLeft(24.0f),
+               juce::Justification::centredLeft);
 }
 
 void AxisEQAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    paintBackground(g);
-
-    // Logo — left of header
-    g.setColour(TEXT_HI);
-    g.setFont(juce::FontOptions(22.0f).withStyle("Bold"));
-    g.drawText("AxisEQ", 16, 0, 120, 48, juce::Justification::centredLeft, false);
-
-    // Accent dot between logo sections
-    g.setColour(ACCENT_1);
-    g.fillEllipse(juce::Rectangle<float>(3.0f, 3.0f, 5.0f, 5.0f).withY(21.5f).withX(8.0f));
+    g.drawImageAt(background, 0, 0);
 }
 
 //──────────────────────────────────────────────────────────────────────────────
@@ -224,42 +140,22 @@ void AxisEQAudioProcessorEditor::paint(juce::Graphics& g)
 //──────────────────────────────────────────────────────────────────────────────
 void AxisEQAudioProcessorEditor::resized()
 {
-    auto area = getLocalBounds();
+    if (eqCurve == nullptr || controlPanel == nullptr || presetBar == nullptr)
+        return;   // still constructing
 
-    // ── Top bar (48 px) ───────────────────────────────────────────────────
-    auto headerArea = area.removeFromTop(48);
-    layoutTopBar(headerArea);
+    const int w = getWidth(), h = getHeight();
 
-    // ── Bottom control strip ──────────────────────────────────────────────
-    auto footerArea = area.removeFromBottom(AxisEQ::ControlPanelComponent::PanelHeight);
-    if (controlPanel)
-        controlPanel->setBounds(footerArea);
+    power.setBounds(w - 68, 21, 46, 24);
+    presetBar->setBounds(juce::jmax(300, w - 520), 19, 430, 28);
 
-    // ── EQ canvas fills the rest ──────────────────────────────────────────
-    if (eqCurve)
-        eqCurve->setBounds(area);
-}
+    const int panelHeight = ControlPanelComponent::PanelHeight + 16;
+    panelCard  = { Margin, h - FooterHeight - panelHeight, w - 2 * Margin, panelHeight };
+    canvasCard = { Margin, HeaderHeight + 12, w - 2 * Margin, panelCard.getY() - 12 - (HeaderHeight + 12) };
 
-void AxisEQAudioProcessorEditor::layoutTopBar(juce::Rectangle<int>& area)
-{
-    // Logo occupies fixed left region — skip 160 px
-    area.removeFromLeft(160);
+    eqCurve->setBounds(canvasCard.reduced(6));
+    controlPanel->setBounds(panelCard.reduced(10, 8));
 
-    // Right-aligned utility buttons
-    const int btnW = 54, btnH = 26, margin = 6;
-    auto right = area.removeFromRight(160).reduced(0, 11);
-
-    resetBtn.setBounds(right.removeFromRight(btnW).withSizeKeepingCentre(btnW, btnH));
-    right.removeFromRight(margin);
-    savePresetBtn.setBounds(right.removeFromRight(btnW).withSizeKeepingCentre(btnW, btnH));
-
-    // Nav + preset combo in the remaining centre
-    auto centre = area.reduced(0, 10);
-    const int navW = 28;
-
-    prevPresetBtn.setBounds(centre.removeFromLeft(navW).withSizeKeepingCentre(navW, 26));
-    centre.removeFromLeft(4);
-    nextPresetBtn.setBounds(centre.removeFromRight(navW).withSizeKeepingCentre(navW, 26));
-    centre.removeFromRight(4);
-    presetCombo.setBounds(centre);
+    background = juce::Image(juce::Image::RGB, w, h, false);
+    juce::Graphics g(background);
+    paintBackground(g);
 }
