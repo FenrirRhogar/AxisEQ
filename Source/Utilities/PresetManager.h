@@ -71,6 +71,9 @@ public:
     /// Re-reads the user preset folder. Other plugin instances may have changed it.
     void scanUserPresetsFromDisk();
 
+    /// Folder holding the user presets (created if missing).
+    juce::File getUserPresetsDirectory() const;
+
 private:
     juce::AudioProcessorValueTreeState& apvts;
 
@@ -83,7 +86,6 @@ private:
     /// Apply a Preset's band data directly to the APVTS parameters.
     void applyPreset(const Preset& p);
 
-    juce::File getUserPresetsDirectory() const;
     int findUserPreset(const juce::String& name) const;
 
     // Helpers for disk serialisation
