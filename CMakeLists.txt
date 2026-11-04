@@ -22,6 +22,15 @@ else()
     FetchContent_MakeAvailable(JUCE)
 endif()
 
+# VST3 everywhere; AU for Logic/GarageBand on macOS; LV2 on Linux.
+if(APPLE)
+    set(AXISEQ_FORMATS VST3 AU)
+elseif(WIN32)
+    set(AXISEQ_FORMATS VST3)
+else()
+    set(AXISEQ_FORMATS VST3 LV2)
+endif()
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Plugin target
 # ──────────────────────────────────────────────────────────────────────────────
@@ -35,7 +44,8 @@ juce_add_plugin(AxisEQ
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     PLUGIN_MANUFACTURER_CODE Axis
     PLUGIN_CODE              AxEq
-    FORMATS                  VST3 AU Standalone
+    FORMATS                  ${AXISEQ_FORMATS}
+    LV2URI                   "https://github.com/FenrirRhogar/AxisEQ"
     PRODUCT_NAME             "AxisEQ"
     COPY_PLUGIN_AFTER_BUILD  FALSE
     ICON_BIG                 AxisEQ_logo.png
