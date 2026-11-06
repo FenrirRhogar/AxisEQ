@@ -29,27 +29,64 @@ EQCurveComponent::EQCurveComponent(AxisEQAudioProcessor& p, SpectrumAnalyzer& a)
     lastInputSpectrum.fill(-100.0f);
     lastOutputSpectrum.fill(-100.0f);
     setMouseCursor(juce::MouseCursor::CrosshairCursor);
+    setOpaque(true);   // the cached background repaints the card corners, so nothing behind needs redrawing
+    for (auto* param : processor.getParameters())
+        param->addListener(this);
     startTimerHz(60);
 }
 
-EQCurveComponent::~EQCurveComponent() { stopTimer(); }
+EQCurveComponent::~EQCurveComponent()
+{
+    stopTimer();
+    for (auto* param : processor.getParameters())
+        param->removeListener(this);
+}
 
 //──────────────────────────────────────────────────────────────────────────────
-// Timer — update hover, repaint
+// Timer — repaint when something on screen moved
 //──────────────────────────────────────────────────────────────────────────────
 void EQCurveComponent::timerCallback()
 {
-    auto mousePos = getMouseXYRelative().toFloat();
-    int newHover = hitTestNode(mousePos.x, mousePos.y);
+    bool changed = parametersChanged.exchange(false);
 
+    std::array<float, FFTSize / 2> curIn, curOut;
+    analyzer.getMagnitudes(0, false, curIn);
+    analyzer.getMagnitudes(0, true,  curOut);
+
+    // Levels under -90 dB are drawn at the floor, so movement down there is invisible.
+    const auto smooth = [&changed](float& shown, float target)
+    {
+        const float before = juce::jmax(shown, -90.0f);
+        shown += (target - shown) * 0.25f;
+        changed = changed || std::abs(juce::jmax(shown, -90.0f) - before) > 0.01f;
+    };
+    for (size_t i = 0; i < curIn.size(); ++i)
+    {
+        smooth(lastInputSpectrum [i], curIn [i]);
+        smooth(lastOutputSpectrum[i], curOut[i]);
+    }
+
+    for (int i = 0; i < MaxBands; ++i)
+    {
+        const auto& band = processor.bandParams[i];
+        const float dyn = band.isActive() && band.isDynEnabled() && band.filterUsesGain() ? processor.getDynamicGainDb(i) : 0.0f;
+        changed = changed || std::abs(dyn - lastDynamicGain[static_cast<size_t>(i)]) > 0.01f;
+        lastDynamicGain[static_cast<size_t>(i)] = dyn;
+    }
+
+    if (changed)
+        repaint();
+}
+
+void EQCurveComponent::updateHover(juce::Point<float> pos)
+{
+    const int newHover = isMouseOver() ? hitTestNode(pos.x, pos.y) : -1;
     if (newHover != hoveredNodeIndex)
     {
         hoveredNodeIndex = newHover;
         setMouseCursor(newHover >= 0 ? juce::MouseCursor::PointingHandCursor
                                      : juce::MouseCursor::CrosshairCursor);
-        repaint();
     }
-    repaint();
 }
 
 //──────────────────────────────────────────────────────────────────────────────
@@ -59,16 +96,22 @@ void EQCurveComponent::paint(juce::Graphics& g)
 {
     auto b = getLocalBounds().toFloat();
 
+    const float scale = g.getInternalContext().getPhysicalPixelScaleFactor();
+    if (background.isNull() || scale != backgroundScale)
+    {
+        backgroundScale = scale;
+        background = juce::Image(juce::Image::RGB, juce::jmax(1, juce::roundToInt(b.getWidth() * scale)),
+                                 juce::jmax(1, juce::roundToInt(b.getHeight() * scale)), false);
+        juce::Graphics bg(background);
+        bg.addTransform(juce::AffineTransform::scale(scale));
+        drawBackground(bg, b);
+    }
+    g.drawImage(background, b);
+
     juce::Path screen;
     screen.addRoundedRectangle(b, 8.0f);
     g.reduceClipRegion(screen);
-    g.setColour(BG_EQ);
-    g.fillRect(b);
-    g.setGradientFill(juce::ColourGradient(Theme::accent.withAlpha(0.10f), b.getCentreX(), b.getBottom(),
-                                           Theme::accent.withAlpha(0.0f), b.getCentreX(), b.getY(), true));
-    g.fillRect(b);
 
-    drawGrid         (g, b);
     drawSpectrum     (g, b);
     drawResponseCurve(g, b);
     drawNodes        (g, b);
@@ -78,7 +121,30 @@ void EQCurveComponent::paint(juce::Graphics& g)
         drawAddCursor(g, b);
 }
 
-void EQCurveComponent::resized() {}
+void EQCurveComponent::resized() { background = {}; }
+
+//──────────────────────────────────────────────────────────────────────────────
+// Background — glass, glow and grid, cached in `background`
+//──────────────────────────────────────────────────────────────────────────────
+void EQCurveComponent::drawBackground(juce::Graphics& g, juce::Rectangle<float> b)
+{
+    // The corners show the card this sits in (Theme::card, 6 px larger on each side in the editor).
+    g.setGradientFill(juce::ColourGradient(Theme::cardFill.brighter(0.07f), 0.0f, b.getY() - 6.0f,
+                                           Theme::cardFill, 0.0f, b.getBottom() + 6.0f, false));
+    g.fillRect(b);
+
+    juce::Path screen;
+    screen.addRoundedRectangle(b, 8.0f);
+    g.reduceClipRegion(screen);
+
+    g.setColour(BG_EQ);
+    g.fillRect(b);
+    g.setGradientFill(juce::ColourGradient(Theme::accent.withAlpha(0.10f), b.getCentreX(), b.getBottom(),
+                                           Theme::accent.withAlpha(0.0f), b.getCentreX(), b.getY(), true));
+    g.fillRect(b);
+
+    drawGrid(g, b);
+}
 
 //──────────────────────────────────────────────────────────────────────────────
 // Grid
@@ -121,16 +187,6 @@ void EQCurveComponent::drawGrid(juce::Graphics& g, juce::Rectangle<float> b)
 //──────────────────────────────────────────────────────────────────────────────
 void EQCurveComponent::drawSpectrum(juce::Graphics& g, juce::Rectangle<float> b)
 {
-    std::array<float, FFTSize / 2> curIn, curOut;
-    analyzer.getMagnitudes(0, false, curIn);
-    analyzer.getMagnitudes(0, true,  curOut);
-
-    for (size_t i = 0; i < curIn.size(); ++i)
-    {
-        lastInputSpectrum [i] += (curIn [i] - lastInputSpectrum [i]) * 0.25f;
-        lastOutputSpectrum[i] += (curOut[i] - lastOutputSpectrum[i]) * 0.25f;
-    }
-
     auto makePath = [&](const std::array<float, FFTSize / 2>& spec) -> juce::Path
     {
         juce::Path p;
@@ -376,9 +432,16 @@ void EQCurveComponent::setBoolParam(const char* suffix, int idx, bool on)
 //──────────────────────────────────────────────────────────────────────────────
 // Mouse
 //──────────────────────────────────────────────────────────────────────────────
-void EQCurveComponent::mouseMove(const juce::MouseEvent& /*e*/)
+void EQCurveComponent::mouseMove(const juce::MouseEvent& e)
 {
+    updateHover(e.position);
     repaint(); // redraws the add-band cursor / tooltip
+}
+
+void EQCurveComponent::mouseExit(const juce::MouseEvent& e)
+{
+    updateHover(e.position);
+    repaint();
 }
 
 void EQCurveComponent::mouseDown(const juce::MouseEvent& e)
@@ -458,8 +521,9 @@ void EQCurveComponent::mouseDrag(const juce::MouseEvent& e)
         setParam("gain", draggingNodeIndex, gain);
 }
 
-void EQCurveComponent::mouseUp(const juce::MouseEvent& /*e*/)
+void EQCurveComponent::mouseUp(const juce::MouseEvent& e)
 {
+    updateHover(e.position);   // a click may have added a band under the pointer, a drag moved one
     if (draggingNodeIndex < 0) return;
 
     if (auto* p = processor.apvts.getParameter(paramID("freq", draggingNodeIndex)))
@@ -480,6 +544,7 @@ void EQCurveComponent::mouseDoubleClick(const juce::MouseEvent& e)
     setBoolParam("active", hit, false);
     setBoolParam("bypass", hit, false);
     setParam    ("gain",   hit, 0.f);
+    updateHover(e.position);
 
     if (selectedNodeIndex == hit)
     {
