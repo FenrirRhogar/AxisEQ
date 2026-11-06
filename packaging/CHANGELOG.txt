@@ -1,5 +1,16 @@
 AXISEQ  -  CHANGELOG
 
+1.1.1
+- Fixed: in a large window the EQ display used a whole CPU core and the window could stop
+  responding. The display now redraws only when something changes, and idle CPU use dropped from a
+  full core to a few percent.
+- Update notice: the footer shows "UPDATE x.y.z AVAILABLE" when a newer version is out. Click it for
+  the download page, or to switch the check off. It asks GitHub at most once a day and sends nothing
+  about you or your sessions.
+- New fuzz test: every build throws random automation at every parameter, at four sample rates and
+  five block sizes.
+- macOS builds come from a newer build machine (macOS 15).
+
 1.1.0
 Sound
 - Dynamic low shelves, high shelves and tilts now keep their shape (they used to turn into bells).
