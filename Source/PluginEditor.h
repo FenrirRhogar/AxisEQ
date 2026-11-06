@@ -9,6 +9,7 @@
 #include "GUI/PresetBar.h"
 #include "GUI/PowerSwitch.h"
 #include "Utilities/PresetManager.h"
+#include "UpdateCheck.h"
 
 //==============================================================================
 /// AxisEQ top-level editor:
@@ -36,6 +37,7 @@ private:
     std::unique_ptr<AxisEQ::ControlPanelComponent> controlPanel;
     std::unique_ptr<AxisEQ::PresetBar> presetBar;
     AxisEQ::PowerSwitch power;
+    std::unique_ptr<fenrikos::UpdateBadge> updateBadge;   // "AXISEQ 1.1.0" in the footer, or "UPDATE ... AVAILABLE"
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerAttachment;
 
     juce::Rectangle<int> canvasCard, panelCard;

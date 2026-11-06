@@ -41,6 +41,12 @@ AxisEQAudioProcessorEditor::AxisEQAudioProcessorEditor(AxisEQAudioProcessor& p)
         processorRef.apvts, "master_bypass", power);
     addAndMakeVisible(power);
 
+    updateBadge = std::make_unique<fenrikos::UpdateBadge>("AXISEQ " + juce::String(JucePlugin_VersionString),
+                                                          juce::FontOptions(10.0f, juce::Font::bold).withKerningFactor(0.25f),
+                                                          Theme::textDim.withAlpha(0.45f), Theme::accent,
+                                                          juce::Justification::centredLeft);
+    addAndMakeVisible(*updateBadge);
+
     // Resize limits and size come last: both trigger resized(), which needs every child.
     setResizable(true, true);
     setResizeLimits(860, 520, 2560, 1440);
@@ -125,9 +131,6 @@ void AxisEQAudioProcessorEditor::paintBackground(juce::Graphics& g)
     const auto footer = bounds.withTop(bounds.getBottom() - static_cast<float>(FooterHeight));
     g.setColour(Theme::textDim.withAlpha(0.8f));
     g.drawText("FENRIKOS", footer.withTrimmedRight(24.0f), juce::Justification::centredRight);
-    g.setColour(Theme::textDim.withAlpha(0.45f));
-    g.drawText("AXISEQ " + juce::String(JucePlugin_VersionString), footer.withTrimmedLeft(24.0f),
-               juce::Justification::centredLeft);
 }
 
 void AxisEQAudioProcessorEditor::paint(juce::Graphics& g)
@@ -140,7 +143,7 @@ void AxisEQAudioProcessorEditor::paint(juce::Graphics& g)
 //──────────────────────────────────────────────────────────────────────────────
 void AxisEQAudioProcessorEditor::resized()
 {
-    if (eqCurve == nullptr || controlPanel == nullptr || presetBar == nullptr)
+    if (eqCurve == nullptr || controlPanel == nullptr || presetBar == nullptr || updateBadge == nullptr)
         return;   // still constructing
 
     const int w = getWidth(), h = getHeight();
@@ -154,6 +157,7 @@ void AxisEQAudioProcessorEditor::resized()
 
     eqCurve->setBounds(canvasCard.reduced(6));
     controlPanel->setBounds(panelCard.reduced(10, 8));
+    updateBadge->setBounds(24, h - FooterHeight, w / 2, FooterHeight);
 
     background = juce::Image(juce::Image::RGB, w, h, false);
     juce::Graphics g(background);
