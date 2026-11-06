@@ -74,6 +74,9 @@ jobs:
           tests=build/AxisEQTests_artefacts/Release/AxisEQTests
           [[ "${{ matrix.platform }}" == windows ]] && tests="$tests.exe"
           "$tests"
+          fuzz=build/AxisEQFuzzTests
+          [[ -f build/Release/AxisEQFuzzTests.exe ]] && fuzz=build/Release/AxisEQFuzzTests.exe
+          "$fuzz" "$GITHUB_RUN_NUMBER"   # a different seed each run
 
       - name: Sign (macOS, Developer ID)
         if: matrix.platform == 'macos' && env.SIGN_MACOS == 'true'

@@ -128,6 +128,12 @@ if(AXISEQ_TESTS)
     target_compile_definitions(AxisEQTests PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
     target_link_libraries(AxisEQTests PRIVATE juce::juce_audio_processors juce::juce_dsp
                                       PUBLIC juce::juce_recommended_config_flags)
+
+    # Parameter fuzzing against the whole plugin, like pluginval's "Fuzz parameters".
+    add_executable(AxisEQFuzzTests tests/FuzzTests.cpp)
+    target_include_directories(AxisEQFuzzTests PRIVATE $<TARGET_PROPERTY:AxisEQ,INCLUDE_DIRECTORIES>)
+    target_compile_definitions(AxisEQFuzzTests PRIVATE $<TARGET_PROPERTY:AxisEQ,COMPILE_DEFINITIONS>)
+    target_link_libraries(AxisEQFuzzTests PRIVATE AxisEQ)
 endif()
 
 # ──────────────────────────────────────────────────────────────────────────────
