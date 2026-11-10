@@ -48,10 +48,21 @@ AxisEQAudioProcessorEditor::AxisEQAudioProcessorEditor(AxisEQAudioProcessor& p)
                                                           juce::Justification::centredRight);
     addAndMakeVisible(*updateBadge);
 
-    // Resize limits and size come last: both trigger resized(), which needs every child.
-    setResizable(true, true);
-    setResizeLimits(1040 + 2 * Ear, 600, 2560, 1440);
-    setSize(1100 + 2 * Ear, 680);
+    sizeSelect.onChange = [this](int i) { setPanelSize(i); };
+    addAndMakeVisible(sizeSelect);
+
+    // The size comes last: it triggers resized(), which needs every child.
+    setPanelSize((int) processorRef.apvts.state.getProperty("uiSize", 1));
+}
+
+// S / M / L: the whole panel at 80, 100 or 125 %. Saved with the session.
+void AxisEQAudioProcessorEditor::setPanelSize(int index)
+{
+    index = juce::jlimit(0, 2, index);
+    sizeSelect.setSelected(index);
+    processorRef.apvts.state.setProperty("uiSize", index, nullptr);
+    const auto s = rackui::sizeScale(index);
+    setSize(juce::roundToInt((float) BaseWidth * s), juce::roundToInt((float) BaseHeight * s));
 }
 
 AxisEQAudioProcessorEditor::~AxisEQAudioProcessorEditor()
@@ -97,7 +108,7 @@ void AxisEQAudioProcessorEditor::onSavePreset()
 void AxisEQAudioProcessorEditor::paintBackground(juce::Graphics& g)
 {
     using namespace rackui;
-    const auto bounds = getLocalBounds().toFloat();
+    const auto bounds = juce::Rectangle<float>((float) BaseWidth, (float) BaseHeight);
     const auto plateArea = bounds.reduced(static_cast<float>(Ear), 0.0f);
     plate(g, plateArea);
     ears(g, bounds);
@@ -118,6 +129,8 @@ void AxisEQAudioProcessorEditor::paintBackground(juce::Graphics& g)
     bezel(g, canvasCard.toFloat());
     rule(g, plateArea.getX() + (float) Margin, plateArea.getRight() - (float) Margin, (float) panelCard.getY() - 12.0f);
 
+    print(g, "SIZE", { (float) sizeSelect.getX() - 40.0f, (float) sizeSelect.getY(), 34.0f, 14.0f }, Face::textMedium, 8.0f, 0.3f,
+          colour::inkFaint, juce::Justification::centredRight);
     print(g, "fenrikos", { x, bounds.getBottom() - 20.0f, 200.0f, 14.0f }, Face::textMedium, 8.0f, 0.3f, colour::inkFaint,
           juce::Justification::centredLeft);
 }
@@ -135,8 +148,10 @@ void AxisEQAudioProcessorEditor::resized()
     if (eqCurve == nullptr || controlPanel == nullptr || presetBar == nullptr || updateBadge == nullptr)
         return;   // still constructing
 
-    const int w = getWidth(), h = getHeight();
-    const auto plateBounds = getLocalBounds().reduced(Ear, 0);
+    // Laid out at the base size, then scaled as a whole to the size picked on SIZE.
+    uiScale = (float) getWidth() / (float) BaseWidth;
+    const int h = BaseHeight;
+    const auto plateBounds = juce::Rectangle<int>(BaseWidth, BaseHeight).reduced(Ear, 0);
     const int x = plateBounds.getX() + Margin, pw = plateBounds.getWidth() - 2 * Margin;
 
     // Header: preset panel and the IN switch, right-aligned on the nameplate's line.
@@ -150,8 +165,11 @@ void AxisEQAudioProcessorEditor::resized()
     eqCurve->setBounds(canvasCard.reduced(7));
     controlPanel->setBounds(panelCard);
     updateBadge->setBounds(plateBounds.getRight() - Margin - 300, h - 20, 300, 14);
+    sizeSelect.setBounds(BaseWidth / 2 - 20, h - 20, 92, 14);
+    rackui::scaleChildren(*this, uiScale);
 
-    background = juce::Image(juce::Image::RGB, w, h, false);
+    background = juce::Image(juce::Image::RGB, getWidth(), getHeight(), false);
     juce::Graphics g(background);
+    g.addTransform(juce::AffineTransform::scale(uiScale));
     paintBackground(g);
 }

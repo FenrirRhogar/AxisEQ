@@ -42,6 +42,10 @@ private:
 
     juce::Rectangle<int> canvasCard, panelCard;
     int headerDividerX = 0;
+    static constexpr int BaseWidth = 1100 + 2 * Ear, BaseHeight = 680;
+    float uiScale = 1.0f;
+    rackui::LedSelector sizeSelect { rackui::sizeNames(), juce::Colour(0xFFFFC928) };
+    void setPanelSize(int index);
     juce::Image background;   // everything static, redrawn only on resize
 
     void onSavePreset();
