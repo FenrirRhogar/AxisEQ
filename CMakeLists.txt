@@ -91,7 +91,18 @@ target_compile_definitions(AxisEQ
 # ──────────────────────────────────────────────────────────────────────────────
 # Linked JUCE modules
 # ──────────────────────────────────────────────────────────────────────────────
+# Panel fonts (SIL OFL), compiled in so legends look the same on every platform.
+juce_add_binary_data(RackFonts
+    HEADER_NAME "RackFonts.h"
+    NAMESPACE RackFonts
+    SOURCES Source/GUI/fonts/BarlowCondensed-SemiBold.ttf Source/GUI/fonts/BarlowCondensed-Bold.ttf
+            Source/GUI/fonts/Barlow-Regular.ttf Source/GUI/fonts/Barlow-Medium.ttf
+            Source/GUI/fonts/JetBrainsMono-Medium.ttf Source/GUI/fonts/JetBrainsMono-Bold.ttf)
+set_target_properties(RackFonts PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 target_link_libraries(AxisEQ
+    PUBLIC
+        RackFonts
     PRIVATE
         juce::juce_audio_basics
         juce::juce_audio_devices

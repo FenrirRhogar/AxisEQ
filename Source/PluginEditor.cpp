@@ -1,6 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "GUI/Theme.h"
+#include "GUI/RackUI.h"
 #include "Utilities/Constants.h"
 
 using namespace AxisEQ;
@@ -41,16 +42,16 @@ AxisEQAudioProcessorEditor::AxisEQAudioProcessorEditor(AxisEQAudioProcessor& p)
         processorRef.apvts, "master_bypass", power);
     addAndMakeVisible(power);
 
-    updateBadge = std::make_unique<fenrikos::UpdateBadge>("AXISEQ " + juce::String(JucePlugin_VersionString),
-                                                          juce::FontOptions(10.0f, juce::Font::bold).withKerningFactor(0.25f),
-                                                          Theme::textDim.withAlpha(0.45f), Theme::accent,
-                                                          juce::Justification::centredLeft);
+    updateBadge = std::make_unique<fenrikos::UpdateBadge>(juce::String(juce::CharPointer_UTF8("AXISEQ  \xc2\xb7  V")) + JucePlugin_VersionString,
+                                                          rackui::font(rackui::Face::textMedium, 8.0f, 0.3f),
+                                                          rackui::colour::inkFaint, Theme::accent,
+                                                          juce::Justification::centredRight);
     addAndMakeVisible(*updateBadge);
 
     // Resize limits and size come last: both trigger resized(), which needs every child.
     setResizable(true, true);
-    setResizeLimits(860 + 2 * Ear, 560, 2560, 1440);
-    setSize(980 + 2 * Ear, 660);
+    setResizeLimits(1040 + 2 * Ear, 600, 2560, 1440);
+    setSize(1100 + 2 * Ear, 680);
 }
 
 AxisEQAudioProcessorEditor::~AxisEQAudioProcessorEditor()
@@ -95,31 +96,30 @@ void AxisEQAudioProcessorEditor::onSavePreset()
 //──────────────────────────────────────────────────────────────────────────────
 void AxisEQAudioProcessorEditor::paintBackground(juce::Graphics& g)
 {
+    using namespace rackui;
     const auto bounds = getLocalBounds().toFloat();
-    const auto plate = bounds.reduced(static_cast<float>(Ear), 0.0f);
-    rack::faceplate(g, bounds);
+    const auto plateArea = bounds.reduced(static_cast<float>(Ear), 0.0f);
+    plate(g, plateArea);
+    ears(g, bounds);
 
-    // Nameplate: Ansuz mark, model name and tagline silkscreened at the top left.
-    const float x = plate.getX();
-    Theme::fillRune(g, Theme::ansuz({ x + 16.0f, 16.0f, 34.0f, 34.0f }));
-    const auto wordFont = juce::FontOptions(24.0f, juce::Font::bold).withKerningFactor(0.28f);
-    g.setFont(wordFont);
-    rack::silk(g, "AXIS", { x + 56.0f, 13.0f, 140.0f, 26.0f }, juce::Justification::centredLeft);
-    const float eqX = x + 56.0f + juce::GlyphArrangement::getStringWidth(wordFont, "AXIS") + 10.0f;
-    rack::silk(g, "EQ", { eqX, 13.0f, 60.0f, 26.0f }, juce::Justification::centredLeft, Theme::accent.brighter(0.3f));
-    g.setFont(juce::FontOptions(10.5f).withKerningFactor(0.08f));
-    g.setColour(Theme::textDim);
-    g.drawText("24-BAND DYNAMIC EQUALISER", juce::Rectangle<float>(x + 57.0f, 40.0f, 300.0f, 14.0f), juce::Justification::centredLeft);
+    // Nameplate: the Ansuz rune, AXIS EQ, and the sub-legend.
+    const float x = plateArea.getX() + (float) Margin;
+    g.setColour(juce::Colour(0xFFF08A3E));
+    g.fillPath(rune({ { 7, 2, 7, 18 }, { 7, 2.4f, 15, 8 }, { 7, 7.6f, 15, 13.2f } }), juce::AffineTransform::scale(1.3f).translated(x, 22.0f));
+    const auto wordFont = font(Face::legendBold, 30.0f, 0.08f);
+    print(g, "AXIS", { x + 36.0f, 18.0f, 120.0f, 30.0f }, Face::legendBold, 30.0f, 0.08f, colour::ink, juce::Justification::centredLeft);
+    print(g, "EQ", { x + 44.0f + juce::GlyphArrangement::getStringWidth(wordFont, "AXIS"), 18.0f, 60.0f, 30.0f }, Face::legendBold, 30.0f, 0.08f,
+          juce::Colour(0xFF8FB6FF), juce::Justification::centredLeft);
+    print(g, "24-BAND DYNAMIC EQUALISER", { x + 37.0f, 48.0f, 260.0f, 12.0f }, Face::textMedium, 9.0f, 0.2f, colour::inkDim,
+          juce::Justification::centredLeft);
+    divider(g, (float) headerDividerX, 26.0f, 34.0f);
 
-    rack::seam(g, plate.getX() + 16.0f, plate.getRight() - 16.0f, 66.0f);
+    // The screen sits in a bezel; the band strip below is open plate.
+    bezel(g, canvasCard.toFloat());
+    rule(g, plateArea.getX() + (float) Margin, plateArea.getRight() - (float) Margin, (float) panelCard.getY() - 12.0f);
 
-    rack::bezel(g, canvasCard.toFloat(), 9.0f);
-    Theme::card(g, panelCard.toFloat(), 6.0f);
-
-    g.setFont(juce::FontOptions(10.0f, juce::Font::bold).withKerningFactor(0.3f));
-    const auto footer = plate.withTop(bounds.getBottom() - static_cast<float>(FooterHeight));
-    g.setColour(Theme::textDim);
-    g.drawText("FENRIKOS", footer.withTrimmedRight(24.0f), juce::Justification::centredRight);
+    print(g, "FENRIKOS", { x, bounds.getBottom() - 20.0f, 200.0f, 14.0f }, Face::textMedium, 8.0f, 0.3f, colour::inkFaint,
+          juce::Justification::centredLeft);
 }
 
 void AxisEQAudioProcessorEditor::paint(juce::Graphics& g)
@@ -136,19 +136,20 @@ void AxisEQAudioProcessorEditor::resized()
         return;   // still constructing
 
     const int w = getWidth(), h = getHeight();
-    const auto plate = getLocalBounds().reduced(Ear, 0);
-    const int x = plate.getX() + Margin, pw = plate.getWidth() - 2 * Margin;
+    const auto plateBounds = getLocalBounds().reduced(Ear, 0);
+    const int x = plateBounds.getX() + Margin, pw = plateBounds.getWidth() - 2 * Margin;
 
-    power.setBounds(plate.getRight() - 70, 20, 50, 28);
-    presetBar->setBounds(juce::jmax(x + 300, plate.getRight() - 526), 20, 436, 28);
+    // Header: preset panel and the IN switch, right-aligned on the nameplate's line.
+    power.setBounds(plateBounds.getRight() - Margin - 64, 24, 64, 30);
+    headerDividerX = power.getX() - 20;
+    presetBar->setBounds(headerDividerX - 20 - 440, 22, 440, 34);
 
-    const int panelHeight = ControlPanelComponent::PanelHeight + 20;
-    panelCard  = { x, h - FooterHeight - panelHeight, pw, panelHeight };
-    canvasCard = { x, HeaderHeight + 14, pw, panelCard.getY() - 22 - (HeaderHeight + 14) };
+    panelCard  = { x, h - FooterHeight - ControlPanelComponent::PanelHeight - 6, pw, ControlPanelComponent::PanelHeight };
+    canvasCard = { x, HeaderHeight + 6, pw, panelCard.getY() - 30 - (HeaderHeight + 6) };
 
-    eqCurve->setBounds(canvasCard.reduced(8));
-    controlPanel->setBounds(panelCard.reduced(12, 10));
-    updateBadge->setBounds(plate.getX() + 24, h - FooterHeight, w / 2, FooterHeight);
+    eqCurve->setBounds(canvasCard.reduced(7));
+    controlPanel->setBounds(panelCard);
+    updateBadge->setBounds(plateBounds.getRight() - Margin - 300, h - 20, 300, 14);
 
     background = juce::Image(juce::Image::RGB, w, h, false);
     juce::Graphics g(background);

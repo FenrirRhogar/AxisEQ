@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "Theme.h"
+#include "RackUI.h"
 #include "Utilities/PresetManager.h"
 
 namespace AxisEQ
@@ -38,39 +39,34 @@ public:
     void resized() override
     {
         auto b = getLocalBounds();
-        save.setBounds(b.removeFromRight(58));
+        save.setBounds(b.removeFromRight(58).withSizeKeepingCentre(58, 22));
         b.removeFromRight(8);
-        previous.setBounds(b.removeFromLeft(28));
-        next.setBounds(b.removeFromRight(28));
-        nameButton.setBounds(b.reduced(4, 0));
+        previous.setBounds(b.removeFromLeft(30).withSizeKeepingCentre(30, 22));
+        b.removeFromLeft(6);
+        next.setBounds(b.removeFromRight(30).withSizeKeepingCentre(30, 22));
+        b.removeFromRight(6);
+        nameButton.setBounds(b);
     }
 
 private:
-    /// Pill showing the current preset name with a drop-down caret.
+    // The preset's name in a recessed OLED window; its category on the right. Click for the menu.
     class NameButton : public juce::Button
     {
     public:
         NameButton() : juce::Button({}) {}
 
-        // Recessed display window with the preset name lit in the accent colour.
         void paintButton(juce::Graphics& g, bool over, bool) override
         {
-            const auto area = getLocalBounds().toFloat().reduced(1.5f);
-            rack::recess(g, area, 3.0f, rack::colours::lcd);
-            g.setColour(Theme::accent.withAlpha(over ? 0.08f : 0.04f));
-            g.fillRoundedRectangle(area, 3.0f);
-
-            const auto text = area.withTrimmedLeft(12.0f).withTrimmedRight(28.0f);
-            g.setFont(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 13.0f, juce::Font::bold));
-            g.setColour(Theme::accent.brighter(0.5f));
-            g.drawText(getButtonText().toUpperCase(), text, juce::Justification::centredLeft, true);
-
+            const auto area = getLocalBounds().toFloat();
+            rackui::oled(g, area);
+            rackui::oledText(g, getButtonText().toUpperCase(), area.reduced(12.0f, 0.0f).withTrimmedRight(14.0f), Theme::accent, 12.5f);
             juce::Path caret;
-            const float cx = area.getRight() - 15.0f, cy = area.getCentreY();
-            caret.startNewSubPath(cx - 4.0f, cy - 2.0f);
+            const float cx = area.getRight() - 12.0f, cy = area.getCentreY();
+            caret.startNewSubPath(cx - 3.5f, cy - 1.5f);
             caret.lineTo(cx, cy + 2.0f);
-            caret.lineTo(cx + 4.0f, cy - 2.0f);
-            g.strokePath(caret, juce::PathStrokeType(1.6f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+            caret.lineTo(cx + 3.5f, cy - 1.5f);
+            g.setColour(Theme::accent.withAlpha(over ? 0.9f : 0.45f));
+            g.strokePath(caret, juce::PathStrokeType(1.4f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
         }
     };
 
@@ -111,7 +107,7 @@ private:
 
     PresetManager& presets;
     NameButton nameButton;
-    juce::TextButton previous { "<" }, next { ">" }, save { "SAVE" };
+    rackui::CapButton previous { "<" }, next { ">" }, save { "STORE" };
 };
 
 } // namespace AxisEQ

@@ -26,7 +26,7 @@ public:
     void resized() override;
 
 private:
-    static constexpr int HeaderHeight = 66, Margin = 16, FooterHeight = 26, Ear = rack::earWidth;
+    static constexpr int HeaderHeight = 74, Margin = 30, FooterHeight = 24, Ear = rackui::earWidth;
 
     AxisEQAudioProcessor& processorRef;
     AxisEQ::PresetManager* presetManager = nullptr;   // owned by the processor
@@ -41,6 +41,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerAttachment;
 
     juce::Rectangle<int> canvasCard, panelCard;
+    int headerDividerX = 0;
     juce::Image background;   // everything static, redrawn only on resize
 
     void onSavePreset();

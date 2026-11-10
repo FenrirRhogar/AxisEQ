@@ -2,21 +2,28 @@
 
 #include <JuceHeader.h>
 #include "Theme.h"
+#include "RackUI.h"
 
 namespace AxisEQ
 {
 
-/// Illuminated push button, lit while the plugin is engaged. Attached to the
+/// Engage switch: an IN cap with a red LED, lit while the plugin is engaged. Attached to the
 /// bypass parameter, so it lights while the toggle is off.
 class PowerSwitch : public juce::ToggleButton
 {
 public:
     PowerSwitch() { setTooltip("Engage / bypass"); }
 
-    // Illuminated IN button: lit while the plugin is engaged (the bypass toggle is off).
+    // Red LED beside an IN cap; lit while the plugin is engaged (the bypass toggle is off).
     void paintButton(juce::Graphics& g, bool over, bool down) override
     {
-        rack::illuminatedButton(g, getLocalBounds().toFloat(), Theme::accent, ! getToggleState(), over, down, "IN");
+        const auto r = getLocalBounds().toFloat();
+        rackui::led(g, { 6.0f, r.getCentreY() }, 4.5f, rackui::colour::red, ! getToggleState());
+        auto capArea = r.withTrimmedLeft(18.0f).reduced(0.0f, 2.0f);
+        rackui::cap(g, capArea, over, down);
+        if (down)
+            capArea.translate(0.0f, 0.5f);
+        rackui::print(g, "IN", capArea, rackui::Face::legend, 11.5f, 0.2f);
     }
 };
 
