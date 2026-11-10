@@ -29,7 +29,6 @@ EQCurveComponent::EQCurveComponent(AxisEQAudioProcessor& p, SpectrumAnalyzer& a)
     lastInputSpectrum.fill(-100.0f);
     lastOutputSpectrum.fill(-100.0f);
     setMouseCursor(juce::MouseCursor::CrosshairCursor);
-    setOpaque(true);   // the cached background repaints the card corners, so nothing behind needs redrawing
     for (auto* param : processor.getParameters())
         param->addListener(this);
     startTimerHz(60);
@@ -100,16 +99,26 @@ void EQCurveComponent::paint(juce::Graphics& g)
     if (background.isNull() || scale != backgroundScale)
     {
         backgroundScale = scale;
-        background = juce::Image(juce::Image::RGB, juce::jmax(1, juce::roundToInt(b.getWidth() * scale)),
-                                 juce::jmax(1, juce::roundToInt(b.getHeight() * scale)), false);
-        juce::Graphics bg(background);
-        bg.addTransform(juce::AffineTransform::scale(scale));
-        drawBackground(bg, b);
+        const int iw = juce::jmax(1, juce::roundToInt(b.getWidth() * scale));
+        const int ih = juce::jmax(1, juce::roundToInt(b.getHeight() * scale));
+        background = juce::Image(juce::Image::ARGB, iw, ih, true);
+        {
+            juce::Graphics bg(background);
+            bg.addTransform(juce::AffineTransform::scale(scale));
+            drawBackground(bg, b);
+        }
+        glass = juce::Image(juce::Image::ARGB, iw, ih, true);
+        {
+            juce::Graphics gl(glass);
+            gl.addTransform(juce::AffineTransform::scale(scale));
+            rack::glassOverlay(gl, b, 4.0f);
+        }
     }
     g.drawImage(background, b);
 
+    const juce::Graphics::ScopedSaveState save(g);
     juce::Path screen;
-    screen.addRoundedRectangle(b, 8.0f);
+    screen.addRoundedRectangle(b, 4.0f);
     g.reduceClipRegion(screen);
 
     drawSpectrum     (g, b);
@@ -119,22 +128,20 @@ void EQCurveComponent::paint(juce::Graphics& g)
     // Ghost crosshair when hovering empty space (add-band hint)
     if (hoveredNodeIndex < 0 && isMouseOver(false))
         drawAddCursor(g, b);
+
+    g.drawImage(glass, b);
 }
 
-void EQCurveComponent::resized() { background = {}; }
+void EQCurveComponent::resized() { background = {}; glass = {}; }
 
 //──────────────────────────────────────────────────────────────────────────────
 // Background — glass, glow and grid, cached in `background`
 //──────────────────────────────────────────────────────────────────────────────
 void EQCurveComponent::drawBackground(juce::Graphics& g, juce::Rectangle<float> b)
 {
-    // The corners show the card this sits in (Theme::card, 6 px larger on each side in the editor).
-    g.setGradientFill(juce::ColourGradient(Theme::cardFill.brighter(0.07f), 0.0f, b.getY() - 6.0f,
-                                           Theme::cardFill, 0.0f, b.getBottom() + 6.0f, false));
-    g.fillRect(b);
-
+    // The corners stay transparent so the bezel drawn by the editor shows through.
     juce::Path screen;
-    screen.addRoundedRectangle(b, 8.0f);
+    screen.addRoundedRectangle(b, 4.0f);
     g.reduceClipRegion(screen);
 
     g.setColour(BG_EQ);

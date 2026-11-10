@@ -1,23 +1,24 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "RackKit.h"
 
 namespace AxisEQ
 {
 
-/// Visual language shared with the other fenrikos plugins: dark graphite cards,
-/// hairline edges, glowing accent arcs and the rune mark.
+/// Visual language shared with the other fenrikos plugins: a black anodised rack plate
+/// with silkscreen legends, machined knobs and the rune mark.
 namespace Theme
 {
-    const juce::Colour plateTop   { 0xFF1E2127 };
-    const juce::Colour plateBottom{ 0xFF131519 };
-    const juce::Colour cardFill   { 0xFF1A1D22 };
-    const juce::Colour cardEdge   { 0x10FFFFFF };
-    const juce::Colour glass      { 0xFF0C0E11 };
-    const juce::Colour text       { 0xFFE2E5EA };
-    const juce::Colour textDim    { 0xFF868C97 };
-    const juce::Colour track      { 0xFF2F333B };
-    const juce::Colour button     { 0xFF252930 };
+    const juce::Colour plateTop   = rack::colours::plateTop;
+    const juce::Colour plateBottom= rack::colours::plateBottom;
+    const juce::Colour cardFill   { 0xFF222428 };
+    const juce::Colour cardEdge   { 0x14FFFFFF };
+    const juce::Colour glass      = rack::colours::glass;
+    const juce::Colour text       = rack::colours::silk;
+    const juce::Colour textDim    = rack::colours::silkDim;
+    const juce::Colour track      { 0xFF3A3C41 };
+    const juce::Colour button     { 0xFF2E3035 };
     const juce::Colour accent     { 0xFF4C8DFF };   // AxisEQ blue
 
     inline juce::Font font(float height, bool bold = false)
@@ -39,29 +40,15 @@ namespace Theme
         g.strokePath(path, juce::PathStrokeType(width, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     }
 
-    /// A small lit dot with a halo.
     inline void led(juce::Graphics& g, juce::Point<float> centre, float radius, juce::Colour colour, bool on)
     {
-        if (on)
-        {
-            g.setGradientFill(juce::ColourGradient(colour.withAlpha(0.45f), centre, colour.withAlpha(0.0f),
-                                                   centre.translated(radius * 3.5f, 0.0f), true));
-            g.fillEllipse(juce::Rectangle<float>(radius * 7.0f, radius * 7.0f).withCentre(centre));
-        }
-        g.setColour(on ? colour.brighter(0.4f) : colour.darker(2.5f).withAlpha(0.8f));
-        g.fillEllipse(juce::Rectangle<float>(radius * 2.0f, radius * 2.0f).withCentre(centre));
+        rack::led(g, centre, radius, colour, on);
     }
 
-    /// Raised card: soft shadow, slightly lighter top edge and a hairline border.
-    inline void card(juce::Graphics& g, juce::Rectangle<float> area, float corner = 12.0f)
+    /// On the rack plate a panel is a silkscreened outline.
+    inline void card(juce::Graphics& g, juce::Rectangle<float> area, float /*corner*/ = 12.0f, const juce::String& title = {})
     {
-        g.setColour(juce::Colours::black.withAlpha(0.28f));
-        g.fillRoundedRectangle(area.translated(0.0f, 3.0f).expanded(1.0f), corner + 1.0f);
-        g.setGradientFill(juce::ColourGradient(cardFill.brighter(0.07f), area.getTopLeft(),
-                                               cardFill, area.getBottomLeft(), false));
-        g.fillRoundedRectangle(area, corner);
-        g.setColour(cardEdge);
-        g.drawRoundedRectangle(area.reduced(0.5f), corner, 1.0f);
+        rack::silkBox(g, area, title);
     }
 
     /// The AxisEQ mark: Ansuz, the A rune. An upright stave with two arms slanting

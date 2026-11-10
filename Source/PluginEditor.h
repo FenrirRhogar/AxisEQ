@@ -26,7 +26,7 @@ public:
     void resized() override;
 
 private:
-    static constexpr int HeaderHeight = 66, Margin = 16, FooterHeight = 26;
+    static constexpr int HeaderHeight = 66, Margin = 16, FooterHeight = 26, Ear = rack::earWidth;
 
     AxisEQAudioProcessor& processorRef;
     AxisEQ::PresetManager* presetManager = nullptr;   // owned by the processor

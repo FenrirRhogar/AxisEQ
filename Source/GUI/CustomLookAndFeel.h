@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "RackKit.h"
 
 namespace AxisEQ
 {
@@ -37,6 +38,9 @@ public:
                            const juce::String& shortcutKeyText,
                            const juce::Drawable* icon, const juce::Colour* const textColourToUse) override;
     juce::Font getPopupMenuFont() override;
+
+private:
+    rack::KnobCache knobCache;
 };
 
 } // namespace AxisEQ

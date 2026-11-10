@@ -13,7 +13,7 @@ namespace AxisEQ
 class ControlPanelComponent : public juce::Component
 {
 public:
-    static constexpr int PanelHeight = 120;
+    static constexpr int PanelHeight = 136;
 
     explicit ControlPanelComponent(AxisEQAudioProcessor& processor);
     ~ControlPanelComponent() override;

@@ -32,52 +32,10 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
                                          const float rotaryEndAngle, juce::Slider& slider)
 {
     const auto bounds = juce::Rectangle<int>(x, y, width, height).toFloat();
-    const auto centre = bounds.getCentre();
-    const float ringR = juce::jmax(6.0f, juce::jmin(bounds.getWidth(), bounds.getHeight()) * 0.5f - 4.0f);
-    const float r = ringR - 5.0f;
-    const float angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
-    const auto colour = slider.findColour(juce::Slider::rotarySliderFillColourId);
-    const bool active = slider.isMouseOverOrDragging() && slider.isEnabled();
-
-    juce::Path track;
-    track.addCentredArc(centre.x, centre.y, ringR, ringR, 0.0f, rotaryStartAngle, rotaryEndAngle, true);
-    g.setColour(Theme::track);
-    g.strokePath(track, juce::PathStrokeType(3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
-
-    // Gain-style controls (range crossing zero) light from the centre, the rest from the start.
-    const auto range = slider.getRange();
-    const float origin = range.getStart() < 0.0 && range.getEnd() > 0.0
-                             ? (float) slider.valueToProportionOfLength(0.0) : 0.0f;
-    const float originAngle = rotaryStartAngle + origin * (rotaryEndAngle - rotaryStartAngle);
-    if (slider.isEnabled() && std::abs(angle - originAngle) > 0.001f)
-    {
-        juce::Path value;
-        value.addCentredArc(centre.x, centre.y, ringR, ringR, 0.0f,
-                            juce::jmin(originAngle, angle), juce::jmax(originAngle, angle), true);
-        Theme::glow(g, value, active ? colour.brighter(0.25f) : colour, 3.0f);
-    }
-
-    // Body: soft shadow, convex rim and a slightly dished face.
-    const auto body = juce::Rectangle<float>(r * 2.0f, r * 2.0f).withCentre(centre);
-    g.setColour(juce::Colours::black.withAlpha(0.45f));
-    g.fillEllipse(body.translated(0.0f, 2.5f).expanded(1.0f));
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xFF40444D), body.getCentreX(), body.getY(),
-                                           juce::Colour(0xFF1A1C21), body.getCentreX(), body.getBottom(), false));
-    g.fillEllipse(body);
-    const auto face = body.reduced(r * 0.14f);
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xFF23262C), face.getCentreX(), face.getY(),
-                                           juce::Colour(0xFF30343B), face.getCentreX(), face.getBottom(), false));
-    g.fillEllipse(face);
-    g.setColour(juce::Colours::white.withAlpha(active ? 0.12f : 0.06f));
-    g.drawEllipse(body.reduced(0.5f), 1.0f);
-
-    const auto polar = [&](float radius) {
-        return centre.translated(radius * std::sin(angle), -radius * std::cos(angle));
-    };
-    juce::Path indicator;
-    indicator.startNewSubPath(polar(r * 0.3f));
-    indicator.lineTo(polar(r * 0.8f));
-    Theme::glow(g, indicator, slider.isEnabled() ? colour.brighter(0.3f) : Theme::textDim, 2.5f);
+    const float ringR = juce::jmax(12.0f, juce::jmin(bounds.getWidth(), bounds.getHeight()) * 0.5f - 3.0f);
+    rack::knob(g, knobCache, bounds.getCentre(), ringR, rotaryStartAngle, rotaryEndAngle, sliderPos,
+               slider.findColour(juce::Slider::rotarySliderFillColourId), slider.isEnabled(),
+               slider.isMouseOverOrDragging());
 }
 
 juce::Label* CustomLookAndFeel::createSliderTextBox(juce::Slider& slider)
@@ -97,51 +55,47 @@ juce::Label* CustomLookAndFeel::createSliderTextBox(juce::Slider& slider)
 void CustomLookAndFeel::drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour&,
                                              bool isMouseOverButton, bool isButtonDown)
 {
-    const auto area = button.getLocalBounds().toFloat().reduced(0.5f);
-    const float corner = area.getHeight() * 0.5f;
     const bool on = button.getClickingTogglesState() && button.getToggleState();
-    const auto lit = button.findColour(juce::TextButton::buttonOnColourId);
-
-    if (on)
-    {
-        g.setColour(lit.withAlpha(0.22f));
-        g.fillRoundedRectangle(area, corner);
-        g.setColour(lit.withAlpha(isMouseOverButton ? 1.0f : 0.8f));
-        g.drawRoundedRectangle(area, corner, 1.0f);
-        return;
-    }
-
-    g.setColour(Theme::button.brighter(isButtonDown ? 0.02f : (isMouseOverButton ? 0.12f : 0.0f)));
-    g.fillRoundedRectangle(area, corner);
-    g.setColour(isMouseOverButton ? Theme::accent.withAlpha(0.45f) : Theme::cardEdge);
-    g.drawRoundedRectangle(area, corner, 1.0f);
+    rack::pushButton(g, button.getLocalBounds().toFloat(), isMouseOverButton && button.isEnabled(), isButtonDown, on);
 }
 
-void CustomLookAndFeel::drawButtonText(juce::Graphics& g, juce::TextButton& button, bool isMouseOverButton, bool)
+// Toggle buttons carry an LED in their on colour; the legend is silkscreened on the cap.
+void CustomLookAndFeel::drawButtonText(juce::Graphics& g, juce::TextButton& button, bool isMouseOverButton, bool isButtonDown)
 {
-    const bool on = button.getClickingTogglesState() && button.getToggleState();
-    g.setFont(juce::FontOptions(10.5f, juce::Font::bold).withKerningFactor(0.08f));
-    g.setColour(on ? button.findColour(juce::TextButton::buttonOnColourId).brighter(0.4f)
-                   : (isMouseOverButton ? Theme::text : Theme::text.withAlpha(0.85f)));
-    g.drawText(button.getButtonText(), button.getLocalBounds(), juce::Justification::centred, false);
+    const bool toggle = button.getClickingTogglesState();
+    const bool on = toggle && button.getToggleState();
+    auto area = button.getLocalBounds().toFloat().reduced(1.0f, 1.5f);
+    if (on || isButtonDown)
+        area.translate(0.0f, 1.0f);
+    const auto alpha = button.isEnabled() ? 1.0f : 0.4f;
+
+    if (toggle)
+    {
+        const auto lit = button.findColour(juce::TextButton::buttonOnColourId).withAlpha(1.0f);
+        rack::led(g, { area.getX() + 10.0f, area.getCentreY() }, juce::jmin(2.8f, area.getHeight() * 0.18f), lit, on && button.isEnabled());
+        area.removeFromLeft(14.0f);
+    }
+    g.setFont(juce::FontOptions(10.0f, juce::Font::bold).withKerningFactor(0.14f));
+    g.setColour((isMouseOverButton || on ? Theme::text : Theme::text.withAlpha(0.8f)).withMultipliedAlpha(alpha));
+    g.drawText(button.getButtonText().toUpperCase(), area, juce::Justification::centred, false);
 }
 
 //──────────────────────────────────────────────────────────────────────────────
-// Combo boxes: pills with a caret
+// Combo boxes: small recessed display windows with a caret
 //──────────────────────────────────────────────────────────────────────────────
 void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height, bool,
                                      int, int, int, int, juce::ComboBox& box)
 {
-    const auto area = juce::Rectangle<int>(width, height).toFloat().reduced(0.5f);
-    const float corner = juce::jmin(8.0f, area.getHeight() * 0.5f);
-    const bool over = box.isMouseOver(true);
-    g.setColour(Theme::glass.brighter(over ? 0.08f : 0.0f));
-    g.fillRoundedRectangle(area, corner);
-    g.setColour(over ? Theme::accent.withAlpha(0.5f) : Theme::cardEdge.withAlpha(0.12f));
-    g.drawRoundedRectangle(area, corner, 1.0f);
+    const auto area = juce::Rectangle<int>(width, height).toFloat().reduced(1.5f);
+    rack::recess(g, area, 2.5f, rack::colours::lcd);
+    if (box.isMouseOver(true))
+    {
+        g.setColour(Theme::accent.withAlpha(0.06f));
+        g.fillRoundedRectangle(area, 2.5f);
+    }
 
     juce::Path caret;
-    const float cx = area.getRight() - 12.0f, cy = area.getCentreY();
+    const float cx = area.getRight() - 10.0f, cy = area.getCentreY();
     caret.startNewSubPath(cx - 3.5f, cy - 1.5f);
     caret.lineTo(cx, cy + 2.0f);
     caret.lineTo(cx + 3.5f, cy - 1.5f);
@@ -149,13 +103,16 @@ void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height, b
     g.strokePath(caret, juce::PathStrokeType(1.4f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 }
 
-juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox&) { return Theme::font(12.0f); }
+juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox&)
+{
+    return juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 11.5f, juce::Font::bold);
+}
 
 void CustomLookAndFeel::positionComboBoxText(juce::ComboBox& box, juce::Label& label)
 {
     label.setBounds(8, 1, box.getWidth() - 26, box.getHeight() - 2);
     label.setFont(getComboBoxFont(box));
-    label.setColour(juce::Label::textColourId, Theme::text);
+    label.setColour(juce::Label::textColourId, Theme::accent.brighter(0.5f));
 }
 
 //──────────────────────────────────────────────────────────────────────────────

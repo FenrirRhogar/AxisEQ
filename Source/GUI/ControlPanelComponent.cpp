@@ -97,9 +97,9 @@ void ControlPanelComponent::setupKnob(juce::Slider& s, juce::Label& l, const juc
     s.setColour(juce::Slider::textBoxBackgroundColourId,   juce::Colours::transparentBlack);
     addAndMakeVisible(s);
 
-    l.setText(cap, juce::dontSendNotification);
-    l.setFont(juce::FontOptions(9.5f));
-    l.setColour(juce::Label::textColourId, textLo());
+    l.setText(cap.toUpperCase(), juce::dontSendNotification);
+    l.setFont(juce::FontOptions(9.5f, juce::Font::bold).withKerningFactor(0.12f));
+    l.setColour(juce::Label::textColourId, textHi());
     l.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(l);
 }
@@ -116,9 +116,9 @@ void ControlPanelComponent::setupDynKnob(juce::Slider& s, juce::Label& l, const 
     s.setColour(juce::Slider::textBoxBackgroundColourId,   juce::Colours::transparentBlack);
     addAndMakeVisible(s);
 
-    l.setText(cap, juce::dontSendNotification);
-    l.setFont(juce::FontOptions(9.5f));
-    l.setColour(juce::Label::textColourId, textLo());
+    l.setText(cap.toUpperCase(), juce::dontSendNotification);
+    l.setFont(juce::FontOptions(9.5f, juce::Font::bold).withKerningFactor(0.12f));
+    l.setColour(juce::Label::textColourId, textHi());
     l.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(l);
 }
@@ -134,9 +134,9 @@ void ControlPanelComponent::setupCombo(juce::ComboBox& c, juce::Label& l,
     c.setColour(juce::ComboBox::arrowColourId,      textLo().withAlpha(0.6f));
     addAndMakeVisible(c);
 
-    l.setText(cap, juce::dontSendNotification);
-    l.setFont(juce::FontOptions(9.5f));
-    l.setColour(juce::Label::textColourId, textLo().withAlpha(0.5f));
+    l.setText(cap.toUpperCase(), juce::dontSendNotification);
+    l.setFont(juce::FontOptions(8.5f, juce::Font::bold).withKerningFactor(0.12f));
+    l.setColour(juce::Label::textColourId, textLo());
     l.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(l);
 }
@@ -242,8 +242,8 @@ void ControlPanelComponent::paint(juce::Graphics& g)
     g.drawVerticalLine(static_cast<int>(d1), 4.f, h - 4.f);
     g.drawVerticalLine(static_cast<int>(d2), 4.f, h - 4.f);
 
-    // Section headers
-    g.setFont(juce::FontOptions(9.f));
+    // Section headers, silkscreened
+    g.setFont(juce::FontOptions(9.5f, juce::Font::bold).withKerningFactor(0.2f));
     g.setColour(textLo());
     g.drawText("FILTER", juce::Rectangle<float>(4.f,  0.f, d1 - 4.f, 14.f), juce::Justification::centred);
     g.drawText("EQ",     juce::Rectangle<float>(d1,   0.f, d2 - d1,  14.f), juce::Justification::centred);
@@ -251,9 +251,9 @@ void ControlPanelComponent::paint(juce::Graphics& g)
 
     // Band title
     g.setColour(BandColours[static_cast<size_t>(currentBandIndex)]);
-    g.setFont(juce::FontOptions(10.f).withStyle("Bold"));
-    g.drawText("Band " + juce::String(currentBandIndex + 1),
-               4, 0, 60, 14, juce::Justification::centredLeft, false);
+    g.setFont(juce::FontOptions(10.f, juce::Font::bold).withKerningFactor(0.12f));
+    g.drawText("BAND " + juce::String(currentBandIndex + 1),
+               8, 0, 70, 14, juce::Justification::centredLeft, false);
 }
 
 //──────────────────────────────────────────────────────────────────────────────

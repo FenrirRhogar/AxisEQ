@@ -98,7 +98,7 @@ private:
 
     // The glass, glow and grid never change between frames, so they are rendered once per size
     // and display scale; filling them live costs ~12 ms a frame in a large window.
-    juce::Image background;
+    juce::Image background, glass;   // glass: inner shadow and reflection drawn over the content
     float backgroundScale = 0.0f;
 
     // Spectrum smoothing buffers
