@@ -23,11 +23,13 @@
 - **Presets:** factory presets (also available as host programs) and your own user presets, safe with several
   instances open at once.
 - **Zero latency,** with a click-free bypass that hosts also see as their bypass control.
+- **SIZE:** the S / M / L switch at the bottom scales the whole panel to 80, 100 or 125 %, saved with the session.
 
 ## Using it
 
 Click the canvas to add a band, drag a node to move it, right-click to bypass it, double-click to remove it.
-Select a band to edit it in the strip below; turn on **Dynamic** to make it react to the signal.
+Select a band to edit it in the strip below: click a filter type, slope or route LED to change it, and turn on
+the dynamics section's **ON** switch to make the band react to the signal.
 
 ## Building
 
