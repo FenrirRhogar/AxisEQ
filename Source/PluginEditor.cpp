@@ -104,7 +104,7 @@ void AxisEQAudioProcessorEditor::paintBackground(juce::Graphics& g)
 
     // Nameplate: the Ansuz rune, AXIS EQ, and the sub-legend.
     const float x = plateArea.getX() + (float) Margin;
-    g.setColour(juce::Colour(0xFFF08A3E));
+    g.setColour(colour::ink);
     g.fillPath(rune({ { 7, 2, 7, 18 }, { 7, 2.4f, 15, 8 }, { 7, 7.6f, 15, 13.2f } }), juce::AffineTransform::scale(1.3f).translated(x, 22.0f));
     const auto wordFont = font(Face::legendBold, 30.0f, 0.08f);
     print(g, "AXIS", { x + 36.0f, 18.0f, 120.0f, 30.0f }, Face::legendBold, 30.0f, 0.08f, colour::ink, juce::Justification::centredLeft);
@@ -118,7 +118,7 @@ void AxisEQAudioProcessorEditor::paintBackground(juce::Graphics& g)
     bezel(g, canvasCard.toFloat());
     rule(g, plateArea.getX() + (float) Margin, plateArea.getRight() - (float) Margin, (float) panelCard.getY() - 12.0f);
 
-    print(g, "FENRIKOS", { x, bounds.getBottom() - 20.0f, 200.0f, 14.0f }, Face::textMedium, 8.0f, 0.3f, colour::inkFaint,
+    print(g, "fenrikos", { x, bounds.getBottom() - 20.0f, 200.0f, 14.0f }, Face::textMedium, 8.0f, 0.3f, colour::inkFaint,
           juce::Justification::centredLeft);
 }
 
