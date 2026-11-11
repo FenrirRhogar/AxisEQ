@@ -48,7 +48,9 @@ public:
     // ─── Preset list ─────────────────────────────────────────────────────────
     int            getNumPresets()     const noexcept { return static_cast<int>(allPresets.size()); }
     const Preset&  getPreset(int idx)  const          { return allPresets.at(static_cast<size_t>(idx)); }
-    int            getCurrentIndex()   const noexcept { return currentIndex; }
+    int            getCurrentIndex()   const noexcept { return currentIndex.load(); }
+    /// Safe to call from any thread (hosts ask for program names from their own).
+    juce::String   getPresetName(int idx) const;
     int            getNumFactoryPresets() const noexcept { return numFactoryPresets; }
 
     /// After a session restore: points the current index at the preset saved with the session.
@@ -78,7 +80,8 @@ private:
     juce::AudioProcessorValueTreeState& apvts;
 
     std::vector<Preset> allPresets;
-    int currentIndex      = 0;
+    mutable juce::CriticalSection listLock;   // held while the list is rebuilt and by getPresetName
+    std::atomic<int> currentIndex { 0 };
     int numFactoryPresets = 0;
 
     void buildFactoryPresets();

@@ -64,9 +64,7 @@ void SpectrumAnalyzer::processFifo(SingleChannelSampleFifo<float>& fifo, int cha
     const int outIdx = isOutput ? 1 : 0;
     auto& obuffer = overlapBuffers[outIdx][channel];
     
-    // Buffer for new data from FIFO
-    std::vector<float> newSamples;
-    newSamples.resize(FFTSize);
+    fifo.applyPendingReset();   // prepareToPlay asked for the stale audio to go
 
     int numAvailable = fifo.getNumAvailable();
     if (numAvailable <= 0)

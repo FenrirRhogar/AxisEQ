@@ -64,7 +64,7 @@ public:
     AxisEQ::SingleChannelSampleFifo<float> outputFifo[2];
 
     /// Current playback sample rate (safe to read from any thread after prepare).
-    double getSampleRate() const noexcept { return currentSampleRate; }
+    double getSampleRate() const noexcept { return currentSampleRate.load(); }
 
     /// Read the current dynamic gain reduction for GUI visual feedback.
     float getDynamicGainDb(int bandIndex) const noexcept 
@@ -75,8 +75,11 @@ public:
     }
 
 private:
-    double currentSampleRate  = 44100.0;
+    std::atomic<double> currentSampleRate { 44100.0 };   // read by the editor
     int    currentBlockSize   = 512;
+
+    // One host block, no larger than the size announced in prepareToPlay.
+    void processChunk(juce::AudioBuffer<float>& buffer);
 
     // Static EQ Processors (one per channel per band)
     std::array<AxisEQ::BandProcessor, AxisEQ::MaxBands> bands;

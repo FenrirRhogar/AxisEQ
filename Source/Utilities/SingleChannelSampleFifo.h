@@ -20,11 +20,12 @@ class SingleChannelSampleFifo
 public:
     SingleChannelSampleFifo() = default;
 
-    /// Call from prepareToPlay to reset the FIFO state.
+    /// Call from prepareToPlay to discard stale audio from a previous playback context. The
+    /// consumer does the discarding (see applyPendingReset), so no thread ever resets indices
+    /// another thread is using.
     void prepare(int /*samplesPerBlock*/) noexcept
     {
-        buffer.fill(SampleType{});
-        abstractFifo.reset();
+        resetRequested.store(true, std::memory_order_release);
     }
 
     // ─── Audio-thread side (producer) ───────────────────────────────────
@@ -51,6 +52,7 @@ public:
     ///          @p maxSamples if fewer samples are available).
     int pull(SampleType* dest, int maxSamples) noexcept
     {
+        applyPendingReset();
         const auto available = abstractFifo.getNumReady();
         const auto toPull    = std::min(available, maxSamples);
 
@@ -70,6 +72,16 @@ public:
         return toPull;
     }
 
+    /// Consumer side: drops everything queued if prepare() asked for a reset.
+    void applyPendingReset() noexcept
+    {
+        if (resetRequested.exchange(false, std::memory_order_acq_rel))
+        {
+            const auto drop = abstractFifo.read(abstractFifo.getNumReady());
+            juce::ignoreUnused(drop);
+        }
+    }
+
     /// @returns the number of samples currently available for reading.
     int getNumAvailable() const noexcept
     {
@@ -77,6 +89,7 @@ public:
     }
 
 private:
+    std::atomic<bool>                    resetRequested { false };
     juce::AbstractFifo                   abstractFifo { static_cast<int>(Capacity) };
     std::array<SampleType, Capacity>     buffer {};
 };

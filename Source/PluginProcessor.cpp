@@ -60,7 +60,7 @@ void AxisEQAudioProcessor::setCurrentProgram(int index)
 
 const juce::String AxisEQAudioProcessor::getProgramName(int index)
 {
-    return index >= 0 && index < presetManager->getNumFactoryPresets() ? presetManager->getPreset(index).name
+    return index >= 0 && index < presetManager->getNumFactoryPresets() ? presetManager->getPresetName(index)
                                                                        : juce::String();
 }
 
@@ -126,6 +126,26 @@ void AxisEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 {
     juce::ScopedNoDenormals noDenormals;
 
+    // A host may send more samples than it promised in prepareToPlay. Process them in pieces no
+    // larger than that, so nothing sized from the announced block has to grow on the audio thread.
+    const int total = buffer.getNumSamples();
+    const int limit = currentBlockSize > 0 ? currentBlockSize : total;
+    if (total <= limit)
+    {
+        processChunk(buffer);
+        return;
+    }
+
+    for (int start = 0; start < total; start += limit)
+    {
+        juce::AudioBuffer<float> piece(buffer.getArrayOfWritePointers(), buffer.getNumChannels(),
+                                       start, juce::jmin(limit, total - start));
+        processChunk(piece);
+    }
+}
+
+void AxisEQAudioProcessor::processChunk(juce::AudioBuffer<float>& buffer)
+{
     const auto totalNumInputChannels  = getTotalNumInputChannels();
     const auto totalNumOutputChannels = getTotalNumOutputChannels();
     const auto numSamples             = buffer.getNumSamples();

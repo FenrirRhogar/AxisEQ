@@ -85,6 +85,53 @@ int main (int argc, char* argv[])
         automation.join();
     }
 
+    // A host sending more samples than it announced in prepareToPlay: the plugin works through them
+    // in pieces, giving exactly the audio it would give if the host had sent those pieces itself.
+    {
+        constexpr int announced = 128, total = 1000;
+        const auto makePlugin = [&]
+        {
+            std::unique_ptr<juce::AudioProcessor> plugin (createPluginFilter());
+            plugin->setPlayConfigDetails (2, 2, 48000.0, announced);
+            plugin->prepareToPlay (48000.0, announced);
+            juce::Random values (seed + 7);   // the same parameter values in both instances
+            for (auto* p : plugin->getParameters())
+                p->setValueNotifyingHost (values.nextFloat());
+            return plugin;
+        };
+
+        auto whole = makePlugin(), pieces = makePlugin();
+        const int channels = juce::jmax (2, whole->getTotalNumInputChannels());
+        juce::AudioBuffer<float> a (channels, total), b (channels, total);
+        juce::Random noise (seed + 11);
+        for (int ch = 0; ch < channels; ++ch)
+            for (int n = 0; n < total; ++n)
+                a.setSample (ch, n, noise.nextFloat() * 2.0f - 1.0f);
+        for (int ch = 0; ch < channels; ++ch)
+            b.copyFrom (ch, 0, a, ch, 0, total);
+
+        juce::MidiBuffer midi;
+        whole->processBlock (a, midi);
+        for (int start = 0; start < total; start += announced)
+        {
+            juce::AudioBuffer<float> piece (b.getArrayOfWritePointers(), channels, start, juce::jmin (announced, total - start));
+            pieces->processBlock (piece, midi);
+        }
+
+        float worst = 0.0f;
+        for (int ch = 0; ch < 2; ++ch)
+            for (int n = 0; n < total; ++n)
+            {
+                const float x = a.getSample (ch, n), y = b.getSample (ch, n);
+                worst = std::isfinite (x) ? juce::jmax (worst, std::abs (x - y)) : 1.0e9f;
+            }
+        if (worst > 1.0e-6f)
+        {
+            std::printf ("an oversized block differs from the same audio sent in pieces (worst %g)\n", (double) worst);
+            ++failures;
+        }
+    }
+
     std::printf ("seed %d: %s\n", seed, failures == 0 ? "passed" : "FAILED");
     return failures == 0 ? 0 : 1;
 }

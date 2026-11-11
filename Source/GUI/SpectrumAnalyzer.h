@@ -34,6 +34,7 @@ private:
 
     // Working buffers for FFT computation
     std::array<float, FFTSize * 2> fftData;
+    std::array<float, FFTSize> newSamples;   // pulled from the FIFO each tick
 
     // Time-domain overlap buffers
     std::array<std::array<std::array<float, FFTSize>, 2>, 2> overlapBuffers;

@@ -41,13 +41,13 @@ void PresetManager::syncFromState()
 
 void PresetManager::loadNextPreset()
 {
-    loadPreset((currentIndex + 1) % static_cast<int>(allPresets.size()));
+    loadPreset((currentIndex.load() + 1) % static_cast<int>(allPresets.size()));
 }
 
 void PresetManager::loadPreviousPreset()
 {
     int n = static_cast<int>(allPresets.size());
-    loadPreset((currentIndex - 1 + n) % n);
+    loadPreset((currentIndex.load() - 1 + n) % n);
 }
 
 void PresetManager::saveCurrentAsUserPreset(const juce::String& name,
@@ -109,7 +109,7 @@ void PresetManager::deleteUserPreset(int index)
     // Delete only this preset's own file; every other preset on disk is left alone.
     allPresets[static_cast<size_t>(index)].file.deleteFile();
     scanUserPresetsFromDisk();
-    currentIndex = juce::jlimit(0, static_cast<int>(allPresets.size()) - 1, currentIndex);
+    currentIndex = juce::jlimit(0, static_cast<int>(allPresets.size()) - 1, currentIndex.load());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -239,11 +239,18 @@ bool PresetManager::xmlToPreset(const juce::XmlElement& xml, Preset& out)
     return true;
 }
 
+juce::String PresetManager::getPresetName(int idx) const
+{
+    const juce::ScopedLock sl(listLock);
+    return idx >= 0 && idx < static_cast<int>(allPresets.size()) ? allPresets[static_cast<size_t>(idx)].name
+                                                                  : juce::String();
+}
+
 void PresetManager::scanUserPresetsFromDisk()
 {
-    if (static_cast<int>(allPresets.size()) > numFactoryPresets)
-        allPresets.erase(allPresets.begin() + numFactoryPresets, allPresets.end());
-
+    // Read the files first, then swap the new list in under the lock, so a host asking for
+    // program names never sees the list half rebuilt.
+    std::vector<Preset> user;
     auto files = getUserPresetsDirectory().findChildFiles(juce::File::findFiles, false, "*.xml");
     files.sort();
     for (auto& f : files)
@@ -254,10 +261,16 @@ void PresetManager::scanUserPresetsFromDisk()
             if (xmlToPreset(*xml, p))
             {
                 p.file = f;
-                allPresets.push_back(p);
+                user.push_back(std::move(p));
             }
         }
     }
+
+    const juce::ScopedLock sl(listLock);
+    if (static_cast<int>(allPresets.size()) > numFactoryPresets)
+        allPresets.erase(allPresets.begin() + numFactoryPresets, allPresets.end());
+    for (auto& p : user)
+        allPresets.push_back(std::move(p));
 }
 
 int PresetManager::findUserPreset(const juce::String& name) const
