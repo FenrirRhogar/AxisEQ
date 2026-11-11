@@ -1,5 +1,21 @@
 AXISEQ  -  CHANGELOG
 
+2.0.0
+- New look: a graphite rack panel with ears, cream silkscreen, machined knobs printed with real
+  units, an OLED preset window, LED selectors for type, slope and routing, and a calibrated meter.
+- Window size: a SIZE switch (S / M / L = 80 / 100 / 125 %) replaces dragging the corner.
+- The preset name shows an asterisk when any band setting has moved away from the stored preset,
+  and loses it when you put it back or store the preset.
+- Fixed: a host that sends audio in larger blocks than it announced is now handled by working
+  through the block in pieces.
+- Fixed: the analyser's FIFOs were reset from the audio thread when playback was prepared, which
+  could race with the display. The display now clears its own side.
+- Fixed: the preset list is rebuilt under a lock, so a host asking for program names while you
+  save a preset never sees a half-built list.
+- Fixed: the "dB/OCT" label ran into the divider beside the frequency knob.
+- The mouse pointer is always a plain arrow over the window (some Linux desktops showed a
+  resize cursor).
+
 1.1.1
 - Fixed: in a large window the EQ display used a whole CPU core and the window could stop
   responding. The display now redraws only when something changes, and idle CPU use dropped from a

@@ -137,7 +137,7 @@ void ControlPanelComponent::paint(juce::Graphics& g)
     using namespace rackui;
     if (currentBandIndex < 0)
     {
-        print(g, "CLICK THE SCREEN TO ADD A BAND   ·   RIGHT-CLICK TO BYPASS   ·   DOUBLE-CLICK TO REMOVE",
+        print(g, juce::String::fromUTF8 ("CLICK THE SCREEN TO ADD A BAND   \xc2\xb7   RIGHT-CLICK TO BYPASS   \xc2\xb7   DOUBLE-CLICK TO REMOVE"),
               getLocalBounds().toFloat(), Face::legend, 12.0f, 0.16f, colour::inkDim);
         return;
     }
