@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "RackKit.h"
+#include "RackUI.h"
 
 namespace AxisEQ
 {
@@ -14,6 +15,17 @@ public:
     CustomLookAndFeel();
     ~CustomLookAndFeel() override = default;
 
+    // Plain arrow wherever a component asks for the default cursor (see rackui::arrowCursor).
+    juce::MouseCursor getMouseCursorFor (juce::Component& c) override
+    {
+        const auto cursor = juce::LookAndFeel_V4::getMouseCursorFor (c);
+        return cursor == juce::MouseCursor::NormalCursor || cursor == juce::MouseCursor::ParentCursor ? arrow : cursor;
+    }
+
+private:
+    juce::MouseCursor arrow { rackui::arrowCursor() };
+
+public:
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
                           float sliderPos, const float rotaryStartAngle,
                           const float rotaryEndAngle, juce::Slider& slider) override;
