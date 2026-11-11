@@ -156,7 +156,7 @@ void ControlPanelComponent::paint(juce::Graphics& g)
     legend("TYPE", 40.0f, true);
     legend("SLOPE", (float) slopeSelect.getY(), lastSlope);
     legend("ROUTE", (float) routeSelect.getY(), true);
-    print(g, "dB/OCT", { (float) slopeSelect.getRight() + 2.0f, (float) slopeSelect.getY(), 50.0f, 18.0f }, Face::textMedium, 8.0f, 0.12f,
+    print(g, "dB/OCT", { (float) slopeSelect.getRight() + 2.0f, (float) slopeSelect.getY(), 38.0f, 18.0f }, Face::textMedium, 8.0f, 0.12f,
           colour::inkDim.withMultipliedAlpha(lastSlope ? 1.0f : 0.5f), juce::Justification::centredLeft);
 
     print(g, "DYNAMICS", { (float) dividerX[1] + 20.0f, 0.0f, 120.0f, 20.0f }, Face::legend, 11.5f, 0.22f, colour::ink,
@@ -173,7 +173,7 @@ void ControlPanelComponent::resized()
 
     // Filter section.
     typeSelect.setBounds(48, 36, filterW - 48, 64);
-    slopeSelect.setBounds(48, 108, 184, 18);
+    slopeSelect.setBounds(48, 108, 164, 18);   // leaves room for "dB/OCT" before the divider
     routeSelect.setBounds(48, 132, filterW - 48, 18);
     activeToggle.setBounds(0, 160, 90, 18);
     bypassToggle.setBounds(100, 160, 90, 18);
