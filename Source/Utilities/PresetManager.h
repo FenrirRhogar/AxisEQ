@@ -57,6 +57,10 @@ public:
     void syncFromState();
     juce::StringArray getAllPresetNames() const;
 
+    /// True when any band setting differs from the preset as it was loaded or stored. Moving a
+    /// control back to where it was clears it again.
+    bool isModified() const;
+
     // ─── Load / Save ─────────────────────────────────────────────────────────
     void loadPreset(int index);
     void loadNextPreset();
@@ -83,6 +87,11 @@ private:
     mutable juce::CriticalSection listLock;   // held while the list is rebuilt and by getPresetName
     std::atomic<int> currentIndex { 0 };
     int numFactoryPresets = 0;
+
+    // The band parameter values as the current preset left them (message thread; not for the audio thread).
+    void markClean();
+    mutable juce::CriticalSection cleanLock;
+    std::vector<std::pair<juce::RangedAudioParameter*, float>> cleanValues;
 
     void buildFactoryPresets();
 

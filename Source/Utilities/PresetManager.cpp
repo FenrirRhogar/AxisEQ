@@ -10,6 +10,7 @@ PresetManager::PresetManager(juce::AudioProcessorValueTreeState& a) : apvts(a)
     buildFactoryPresets();
     numFactoryPresets = static_cast<int>(allPresets.size());
     scanUserPresetsFromDisk();
+    markClean();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -29,6 +30,7 @@ void PresetManager::loadPreset(int index)
     currentIndex = index;
     applyPreset(allPresets[static_cast<size_t>(index)]);
     apvts.state.setProperty("presetName", allPresets[static_cast<size_t>(index)].name, nullptr);
+    markClean();
 }
 
 void PresetManager::syncFromState()
@@ -37,6 +39,31 @@ void PresetManager::syncFromState()
     for (int i = 0; i < static_cast<int>(allPresets.size()); ++i)
         if (allPresets[static_cast<size_t>(i)].name == name)
             currentIndex = i;
+    markClean();
+}
+
+void PresetManager::markClean()
+{
+    static constexpr const char* suffixes[] = { "active", "bypass", "freq", "gain", "q", "type", "slope", "route",
+                                                "dyn_enabled", "dyn_ext_sc", "dyn_threshold", "dyn_range",
+                                                "dyn_attack", "dyn_release" };
+    std::vector<std::pair<juce::RangedAudioParameter*, float>> values;
+    for (int i = 0; i < MaxBands; ++i)
+        for (auto* suffix : suffixes)
+            if (auto* param = apvts.getParameter(paramID(suffix, i)))
+                values.emplace_back(param, param->getValue());
+
+    const juce::ScopedLock lock(cleanLock);
+    cleanValues = std::move(values);
+}
+
+bool PresetManager::isModified() const
+{
+    const juce::ScopedLock lock(cleanLock);
+    for (const auto& [param, value] : cleanValues)
+        if (std::abs(param->getValue() - value) > 1.0e-5f)
+            return true;
+    return false;
 }
 
 void PresetManager::loadNextPreset()
@@ -100,6 +127,7 @@ void PresetManager::saveCurrentAsUserPreset(const juce::String& name,
     scanUserPresetsFromDisk();
     currentIndex = juce::jmax(0, findUserPreset(name));
     apvts.state.setProperty("presetName", name, nullptr);
+    markClean();
 }
 
 void PresetManager::deleteUserPreset(int index)

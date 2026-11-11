@@ -31,7 +31,9 @@ public:
     void refresh()
     {
         const int index = presets.getCurrentIndex();
-        const auto name = index >= 0 && index < presets.getNumPresets() ? presets.getPreset(index).name : juce::String();
+        auto name = index >= 0 && index < presets.getNumPresets() ? presets.getPreset(index).name : juce::String();
+        if (presets.isModified())
+            name += "*";
         if (name != nameButton.getButtonText())
             nameButton.setButtonText(name);
     }
